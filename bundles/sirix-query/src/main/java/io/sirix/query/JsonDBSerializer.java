@@ -38,6 +38,7 @@ import io.brackit.query.util.serialize.Serializer;
 import io.brackit.query.util.serialize.StringSerializer;
 import io.sirix.api.json.JsonNodeReadOnlyTrx;
 import io.sirix.service.json.serialize.JsonSerializer;
+import io.sirix.query.coverage.CoverageRegister;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -73,28 +74,55 @@ public final class JsonDBSerializer implements Serializer, AutoCloseable {
   public void serialize(final Sequence sequence) {
     try {
       if (first) {
+
+        CoverageRegister.register(0);
+
         first = false;
         out.append("{\"rest\":[");
       } else {
+
+        CoverageRegister.register(1);
+
         out.append(",");
       }
 
       if (sequence != null) {
+
+        CoverageRegister.register(2);
+
         Item item = null;
         Iter it;
+
         if (sequence instanceof Array || sequence instanceof Object) {
+
+          CoverageRegister.register(3);
+
           item = (Item) sequence;
           it = null;
         } else {
+
+          CoverageRegister.register(4);
+
           it = sequence.iterate();
         }
 
         try {
           if (item == null) {
+
+            CoverageRegister.register(5);
+
             item = it.next();
+          } else {
+            CoverageRegister.register(6);
           }
           while (item != null) {
+
+            CoverageRegister.register(7);
+
             if (item instanceof StructuredDBItem) {
+
+              CoverageRegister.register(8);
+
               final var node = (StructuredDBItem<JsonNodeReadOnlyTrx>) item;
               trxSet.add(node.getTrx());
 
@@ -103,39 +131,70 @@ public final class JsonDBSerializer implements Serializer, AutoCloseable {
                       .serializeTimestamp(true)
                       .isXQueryResultSequence();
               if (prettyPrint) {
+
+                CoverageRegister.register(9);
+
                 serializerBuilder.prettyPrint().withInitialIndent();
+              } else {
+                CoverageRegister.register(10);
               }
               final JsonSerializer serializer = serializerBuilder.startNodeKey(node.getNodeKey()).build();
               serializer.call();
 
               item = printCommaIfNextItemExists(it);
             } else if (item instanceof Atomic) {
+
+              CoverageRegister.register(11);
+
               if (((Atomic) item).type() == Type.STR) {
+
+                CoverageRegister.register(12);
+
                 out.append("\"");
+              } else {
+
+                CoverageRegister.register(13);
+              
               }
               out.append(item.toString());
               if (((Atomic) item).type() == Type.STR) {
+
+                CoverageRegister.register(14);
+
                 out.append("\"");
+              } else {
+                CoverageRegister.register(15);
               }
 
               item = printCommaIfNextItemExists(it);
             } else if ((item instanceof Array) || (item instanceof Object)) {
+
+              CoverageRegister.register(16);
+
               try (final var out = new ByteArrayOutputStream(); final var printWriter = new PrintWriter(out)) {
                 new StringSerializer(printWriter).serialize(item);
                 this.out.append(out.toString(StandardCharsets.UTF_8));
               }
 
               item = printCommaIfNextItemExists(it);
+            } else {
+              CoverageRegister.register(17);
             }
           }
         } finally {
           if (it != null) {
+            CoverageRegister.register(18);
             it.close();
+          } else {
+            CoverageRegister.register(19);
           }
         }
 
       }
     } catch (final IOException e) {
+
+      CoverageRegister.register(20);
+
       throw new UncheckedIOException(e);
     }
   }
