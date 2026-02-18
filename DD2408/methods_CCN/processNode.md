@@ -1,4 +1,4 @@
-# getTreeCellRendererComponent
+# processNode
 Path: /bundles/sirix-core/src/main/java/io/sirix/service/json/shredder/JsonResourceCopy.java
 
 ## LOC
