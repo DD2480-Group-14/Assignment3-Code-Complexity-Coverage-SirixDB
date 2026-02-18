@@ -9,16 +9,16 @@ The method contains:
 5 if
 4 case
 2 for loops
-
+5 `&&`
 
 1 throw
 1 return
 
-Total CC: 11 - 2 + 2 = 11
+Total CC: 16 - 2 + 2 = 16
 
 ### Lizard
 
-According to lizard, the CC is 18. This could be due to lizard counting `&&` in if statements. Additionally, lizard does not seem to recognize `return` or `throw`. Counting the CC with these rules, the CC would become 18.
+According to lizard, the CC is 18. This could be due to lizard not recognizing `return` or `throw` as exit points. Counting the CC with these rules, the CC would become 18.
 
 ## LOC
 
