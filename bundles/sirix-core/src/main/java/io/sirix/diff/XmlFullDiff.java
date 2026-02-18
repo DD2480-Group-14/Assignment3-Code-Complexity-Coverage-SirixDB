@@ -306,7 +306,7 @@ class CoverageTool {
     static boolean initialized = false;
 
     /**
-     * Initialize the branch array with if not yet initialized
+     * Initialize the branch array if not yet initialized
      */ 
     static void initializeBranches() {
         for (int i = 0; i < 20; ++i) {
