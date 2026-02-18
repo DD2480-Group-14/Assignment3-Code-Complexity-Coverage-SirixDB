@@ -30,6 +30,14 @@ import io.sirix.api.xml.XmlNodeTrx;
 import io.sirix.node.NodeKind;
 import io.sirix.exception.SirixException;
 
+import java.nio.file.Files;
+import java.io.File;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
 /**
  * Full diff including attributes and namespaces. Note that this class is thread safe.
  *
@@ -55,62 +63,75 @@ final class XmlFullDiff extends AbstractDiff<XmlNodeReadOnlyTrx, XmlNodeTrx> {
 
   @Override
   boolean checkNodes(final XmlNodeReadOnlyTrx newRtx, final XmlNodeReadOnlyTrx oldRtx) {
-    boolean found = false;
-    if (newRtx.getNodeKey() == oldRtx.getNodeKey() && newRtx.getParentKey() == oldRtx.getParentKey()
-        && newRtx.getKind() == oldRtx.getKind()) {
-      switch (newRtx.getKind()) {
-        case ELEMENT:
-          if (checkNamesForEquality(newRtx, oldRtx)
-              && newRtx.getAttributeKeys().equals(oldRtx.getAttributeKeys())
-              && newRtx.getNamespaceKeys().equals(oldRtx.getNamespaceKeys())) {
-            found = true;
+      boolean found = false;
+      if (newRtx.getNodeKey() == oldRtx.getNodeKey() && newRtx.getParentKey() == oldRtx.getParentKey()
+              && newRtx.getKind() == oldRtx.getKind()) {
+          CoverageTool.cover(0);
+          switch (newRtx.getKind()) {
+              case ELEMENT:
+                  CoverageTool.cover(1);
+                  if (checkNamesForEquality(newRtx, oldRtx)
+                          && newRtx.getAttributeKeys().equals(oldRtx.getAttributeKeys())
+                          && newRtx.getNamespaceKeys().equals(oldRtx.getNamespaceKeys())) {
+                      CoverageTool.cover(2);
+                      found = true;
 
-            final long newNodeKey = newRtx.getNodeKey();
-            final long oldNodeKey = oldRtx.getNodeKey();
+                      final long newNodeKey = newRtx.getNodeKey();
+                      final long oldNodeKey = oldRtx.getNodeKey();
 
-            for (final long nsp : newRtx.getNamespaceKeys()) {
-              newRtx.moveTo(nsp);
-              oldRtx.moveTo(nsp);
+                      for (final long nsp : newRtx.getNamespaceKeys()) {
+                          CoverageTool.cover(3);
+                          newRtx.moveTo(nsp);
+                          oldRtx.moveTo(nsp);
 
-              if (!checkNamesForEquality(newRtx, oldRtx)) {
-                found = false;
-                break;
-              }
-            }
-            newRtx.moveTo(newNodeKey);
-            oldRtx.moveTo(oldNodeKey);
+                          if (!checkNamesForEquality(newRtx, oldRtx)) {
+                              CoverageTool.cover(4);
+                              found = false;
+                              break;
+                          }
+                      }
+                      newRtx.moveTo(newNodeKey);
+                      oldRtx.moveTo(oldNodeKey);
 
-            if (found) {
-              for (final long attr : newRtx.getAttributeKeys()) {
-                newRtx.moveTo(attr);
-                oldRtx.moveTo(attr);
+                      if (found) {
+                          CoverageTool.cover(5);
+                          for (final long attr : newRtx.getAttributeKeys()) {
+                              CoverageTool.cover(6);
+                              newRtx.moveTo(attr);
+                              oldRtx.moveTo(attr);
 
-                if (!(checkNamesForEquality(newRtx, oldRtx)
-                    && Objects.equals(newRtx.getValue(), oldRtx.getValue()))) {
-                  found = false;
+                              if (!(checkNamesForEquality(newRtx, oldRtx)
+                                      && Objects.equals(newRtx.getValue(), oldRtx.getValue()))) {
+                                  CoverageTool.cover(7);
+                                  found = false;
+                                  break;
+                              }
+                          }
+
+                          newRtx.moveTo(newNodeKey);
+                          oldRtx.moveTo(oldNodeKey);
+                      }
+                  }
                   break;
-                }
-              }
-
-              newRtx.moveTo(newNodeKey);
-              oldRtx.moveTo(oldNodeKey);
-            }
+              case PROCESSING_INSTRUCTION:
+                  CoverageTool.cover(8);
+                  found = newRtx.getValue().equals(oldRtx.getValue()) && checkNamesForEquality(newRtx, oldRtx);
+                  break;
+              case TEXT:
+                  CoverageTool.cover(9);
+              case COMMENT:
+                  CoverageTool.cover(10);
+                  found = newRtx.getValue().equals(oldRtx.getValue());
+                  break;
+              // $CASES-OMITTED$
+              default:
+                  CoverageTool.cover(11);
+                  throw new IllegalStateException("Other node types currently not supported!");
           }
-          break;
-        case PROCESSING_INSTRUCTION:
-          found = newRtx.getValue().equals(oldRtx.getValue()) && checkNamesForEquality(newRtx, oldRtx);
-          break;
-        case TEXT:
-        case COMMENT:
-          found = newRtx.getValue().equals(oldRtx.getValue());
-          break;
-        // $CASES-OMITTED$
-        default:
-          throw new IllegalStateException("Other node types currently not supported!");
       }
-    }
 
-    return found;
+      CoverageTool.cover(12);
+      return found;
   }
 
   @Override
@@ -278,4 +299,36 @@ final class XmlFullDiff extends AbstractDiff<XmlNodeReadOnlyTrx, XmlNodeTrx> {
         && newRtx.getLocalNameKey() == oldRtx.getLocalNameKey()
         && newRtx.getPrefixKey() == oldRtx.getPrefixKey();
   }
+}
+
+class CoverageTool {
+    static ArrayList<String> branches = new ArrayList<>();
+    static boolean initialized = false;
+
+    static void initializeBranches() {
+        for (int i = 0; i < 20; ++i) {
+            branches.addLast("ID: " + i + "  false\n");
+        }
+        initialized = true;
+    }
+
+    static void cover(int branchId) {
+        if(!CoverageTool.initialized) {
+            initializeBranches();
+        }
+
+        branches.set(branchId, "ID: " + branchId + "  true\n");
+        try {
+            StringBuilder sb = new StringBuilder();
+            for(String branch : branches) {
+                sb.append(branch);
+            }
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter("checkNodesCoverage.txt"));
+            writer.write(sb.toString());
+            writer.close();
+        } catch (IOException e) {
+            System.out.println(e.toString());
+        }
+    }
 }
