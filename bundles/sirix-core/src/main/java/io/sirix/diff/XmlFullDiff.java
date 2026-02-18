@@ -305,6 +305,9 @@ class CoverageTool {
     static ArrayList<String> branches = new ArrayList<>();
     static boolean initialized = false;
 
+    /**
+     * Initialize the branch array with if not yet initialized
+     */ 
     static void initializeBranches() {
         for (int i = 0; i < 20; ++i) {
             branches.addLast("ID: " + i + "  false\n");
@@ -312,6 +315,11 @@ class CoverageTool {
         initialized = true;
     }
 
+    /**
+     * Cover the branch with the given branch ID.
+     * The entire branch array is written to the
+     * file each time this function is called.
+     */
     static void cover(int branchId) {
         if(!CoverageTool.initialized) {
             initializeBranches();
