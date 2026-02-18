@@ -9,12 +9,12 @@ The method contains:
 5 if
 4 case
 2 for loops
-5 `&&`
+6 `&&`
 
 1 throw
 1 return
 
-Total CC: 16 - 2 + 2 = 16
+Total CC: 17 - 2 + 2 = 17
 
 ### Lizard
 
