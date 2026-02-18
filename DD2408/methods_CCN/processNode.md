@@ -1,5 +1,5 @@
 # getTreeCellRendererComponent
-Path: /bundles/sirix-gui/src/main/java/org/sirix/gui/view/tree/TreeCellRenderer.java
+Path: /bundles/sirix-core/src/main/java/io/sirix/service/json/shredder/JsonResourceCopy.java
 
 ## LOC
 According to Lizard the function had 122 lines of code.
