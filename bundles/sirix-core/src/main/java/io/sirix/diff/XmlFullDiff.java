@@ -53,61 +53,96 @@ final class XmlFullDiff extends AbstractDiff<XmlNodeReadOnlyTrx, XmlNodeTrx> {
     return NodeKind.XML_DOCUMENT;
   }
 
+    /**
+     * Helper method for checkNodes
+     * Checks the namespace keys and 
+     * returns the boolean found,
+     * which is false if the names does 
+     * not match
+     */ 
+  boolean checkNodesKeysHelper(final XmlNodeReadOnlyTrx newRtx, final XmlNodeReadOnlyTrx oldRtx, boolean found) {
+      for (final long nsp : newRtx.getNamespaceKeys()) {
+          newRtx.moveTo(nsp);
+          oldRtx.moveTo(nsp);
+
+          if (!checkNamesForEquality(newRtx, oldRtx)) {
+              found = false;
+              break;
+          }
+      }
+      return found;
+  }
+
+    /**
+     * Helper method for checkNodes
+     * Checks the attribute keys
+     * of the transactions
+     */ 
+  boolean checkNodesAttributeKeysHelper(final XmlNodeReadOnlyTrx newRtx, final XmlNodeReadOnlyTrx oldRtx,
+          boolean found, final long newNodeKey, final long oldNodeKey) {
+      if (found) {
+          for (final long attr : newRtx.getAttributeKeys()) {
+              newRtx.moveTo(attr);
+              oldRtx.moveTo(attr);
+
+              if (!(checkNamesForEquality(newRtx, oldRtx)
+                      && Objects.equals(newRtx.getValue(), oldRtx.getValue()))) {
+                  found = false;
+                  break;
+              }
+          }
+
+          newRtx.moveTo(newNodeKey);
+          oldRtx.moveTo(oldNodeKey);
+      }
+      return found;
+  }
+
+    /**
+     * Helper method for checkNodes
+     * Processes the kind of node
+     */
+  boolean checkNodesKindHelper(final XmlNodeReadOnlyTrx newRtx, final XmlNodeReadOnlyTrx oldRtx, boolean found) {
+      switch (newRtx.getKind()) {
+          case ELEMENT:
+              if (checkNamesForEquality(newRtx, oldRtx)
+                      && newRtx.getAttributeKeys().equals(oldRtx.getAttributeKeys())
+                      && newRtx.getNamespaceKeys().equals(oldRtx.getNamespaceKeys())) {
+                  found = true;
+
+                  final long newNodeKey = newRtx.getNodeKey();
+                  final long oldNodeKey = oldRtx.getNodeKey();
+
+                  found = checkNodesKeysHelper(newRtx, oldRtx, found);
+
+                  newRtx.moveTo(newNodeKey);
+                  oldRtx.moveTo(oldNodeKey);
+
+                  found = checkNodesAttributeKeysHelper(newRtx, oldRtx, found, newNodeKey, oldNodeKey);
+
+              }
+              break;
+          case PROCESSING_INSTRUCTION:
+              found = newRtx.getValue().equals(oldRtx.getValue()) && checkNamesForEquality(newRtx, oldRtx);
+              break;
+          case TEXT:
+          case COMMENT:
+              found = newRtx.getValue().equals(oldRtx.getValue());
+              break;
+          // $CASES-OMITTED$
+          default:
+              throw new IllegalStateException("Other node types currently not supported!");
+      }
+      return found;
+  }
+
+
   @Override
   boolean checkNodes(final XmlNodeReadOnlyTrx newRtx, final XmlNodeReadOnlyTrx oldRtx) {
     boolean found = false;
     if (newRtx.getNodeKey() == oldRtx.getNodeKey() && newRtx.getParentKey() == oldRtx.getParentKey()
         && newRtx.getKind() == oldRtx.getKind()) {
-      switch (newRtx.getKind()) {
-        case ELEMENT:
-          if (checkNamesForEquality(newRtx, oldRtx)
-              && newRtx.getAttributeKeys().equals(oldRtx.getAttributeKeys())
-              && newRtx.getNamespaceKeys().equals(oldRtx.getNamespaceKeys())) {
-            found = true;
-
-            final long newNodeKey = newRtx.getNodeKey();
-            final long oldNodeKey = oldRtx.getNodeKey();
-
-            for (final long nsp : newRtx.getNamespaceKeys()) {
-              newRtx.moveTo(nsp);
-              oldRtx.moveTo(nsp);
-
-              if (!checkNamesForEquality(newRtx, oldRtx)) {
-                found = false;
-                break;
-              }
-            }
-            newRtx.moveTo(newNodeKey);
-            oldRtx.moveTo(oldNodeKey);
-
-            if (found) {
-              for (final long attr : newRtx.getAttributeKeys()) {
-                newRtx.moveTo(attr);
-                oldRtx.moveTo(attr);
-
-                if (!(checkNamesForEquality(newRtx, oldRtx)
-                    && Objects.equals(newRtx.getValue(), oldRtx.getValue()))) {
-                  found = false;
-                  break;
-                }
-              }
-
-              newRtx.moveTo(newNodeKey);
-              oldRtx.moveTo(oldNodeKey);
-            }
-          }
-          break;
-        case PROCESSING_INSTRUCTION:
-          found = newRtx.getValue().equals(oldRtx.getValue()) && checkNamesForEquality(newRtx, oldRtx);
-          break;
-        case TEXT:
-        case COMMENT:
-          found = newRtx.getValue().equals(oldRtx.getValue());
-          break;
-        // $CASES-OMITTED$
-        default:
-          throw new IllegalStateException("Other node types currently not supported!");
-      }
+        found = checkNodesKindHelper(newRtx, oldRtx, found);
     }
 
     return found;
