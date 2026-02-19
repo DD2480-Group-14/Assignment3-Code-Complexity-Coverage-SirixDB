@@ -30,6 +30,7 @@ import io.sirix.service.xml.xpath.XPathError;
 import io.sirix.service.xml.xpath.types.Type;
 import io.sirix.utils.TypedValue;
 
+
 /**
  * <p>
  * Performs an arithmetic subtraction on two input operators.
@@ -66,6 +67,7 @@ public class SubOpAxis extends AbstractObAxis {
       case FLOAT:
       case DECIMAL:
       case INTEGER:
+          CoverageTool.cover(0);
         final double dOp1 = Double.parseDouble(new String(mOperand1.getRawValue()));
         final double dOp2 = Double.parseDouble(new String(mOperand2.getRawValue()));
         value = TypedValue.getBytes(dOp1 - dOp2);
@@ -75,13 +77,16 @@ public class SubOpAxis extends AbstractObAxis {
       case DATE_TIME:
       case YEAR_MONTH_DURATION:
       case DAY_TIME_DURATION:
+          CoverageTool.cover(1);
         throw new IllegalStateException(
             "Add operator is not implemented for the type " + returnType.getStringRepr() + " yet.");
       default:
+          CoverageTool.cover(2);
         throw new XPathError(XPathError.ErrorType.XPTY0004);
 
     }
 
+    CoverageTool.cover(3);
     return new AtomicValue(value, typeKey);
 
   }
@@ -98,21 +103,27 @@ public class SubOpAxis extends AbstractObAxis {
       type1 = Type.getType(mOp1).getPrimitiveBaseType();
       type2 = Type.getType(mOp2).getPrimitiveBaseType();
     } catch (final IllegalStateException e) {
+        CoverageTool.cover(4);
       throw new XPathError(XPathError.ErrorType.XPTY0004);
     }
 
     if (type1.isNumericType() && type2.isNumericType()) {
+            CoverageTool.cover(5);
 
       // if both have the same numeric type, return it
       if (type1 == type2) {
+            CoverageTool.cover(6);
         return type1;
       }
 
       if (type1 == Type.DOUBLE || type2 == Type.DOUBLE) {
+            CoverageTool.cover(7);
         return Type.DOUBLE;
       } else if (type1 == Type.FLOAT || type2 == Type.FLOAT) {
+            CoverageTool.cover(8);
         return Type.FLOAT;
       } else {
+            CoverageTool.cover(9);
         assert (type1 == Type.DECIMAL || type2 == Type.DECIMAL);
         return Type.DECIMAL;
       }
@@ -121,39 +132,54 @@ public class SubOpAxis extends AbstractObAxis {
 
       switch (type1) {
         case DATE:
+            CoverageTool.cover(10);
           if (type2 == Type.YEAR_MONTH_DURATION || type2 == Type.DAY_TIME_DURATION) {
+            CoverageTool.cover(11);
             return type1;
           } else if (type2 == Type.DATE) {
+            CoverageTool.cover(12);
             return Type.DAY_TIME_DURATION;
           }
           break;
         case TIME:
+            CoverageTool.cover(13);
           if (type2 == Type.DAY_TIME_DURATION) {
+            CoverageTool.cover(14);
             return type1;
           } else if (type2 == Type.TIME) {
+            CoverageTool.cover(15);
             return Type.DAY_TIME_DURATION;
           }
           break;
         case DATE_TIME:
+            CoverageTool.cover(16);
           if (type2 == Type.YEAR_MONTH_DURATION || type2 == Type.DAY_TIME_DURATION) {
+            CoverageTool.cover(17);
             return type1;
           } else if (type2 == Type.DATE_TIME) {
+            CoverageTool.cover(18);
             return Type.DAY_TIME_DURATION;
           }
           break;
         case YEAR_MONTH_DURATION:
+            CoverageTool.cover(19);
           if (type2 == Type.YEAR_MONTH_DURATION) {
+            CoverageTool.cover(20);
             return type2;
           }
           break;
         case DAY_TIME_DURATION:
+            CoverageTool.cover(21);
           if (type2 == Type.DAY_TIME_DURATION) {
+            CoverageTool.cover(22);
             return type2;
           }
           break;
         default:
+            CoverageTool.cover(22);
           throw new XPathError(XPathError.ErrorType.XPTY0004);
       }
+            CoverageTool.cover(23);
       throw new XPathError(XPathError.ErrorType.XPTY0004);
     }
   }

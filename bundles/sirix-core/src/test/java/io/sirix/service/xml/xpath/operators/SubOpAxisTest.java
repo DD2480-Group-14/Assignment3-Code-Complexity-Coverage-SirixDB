@@ -146,6 +146,13 @@ public class SubOpAxisTest {
             holder.getXmlNodeReadTrx().keyForName("xs:dateTime"),
             holder.getXmlNodeReadTrx().keyForName("xs:dateTime")));
 
+    // Added to increase coverage
+    assertEquals(
+        Type.TIME,
+        axis.getReturnType(
+            holder.getXmlNodeReadTrx().keyForName("xs:time"),
+            holder.getXmlNodeReadTrx().keyForName("xs:dayTimeDuration")));
+
     try {
 
       axis.getReturnType(
@@ -200,6 +207,24 @@ public class SubOpAxisTest {
                   + "typedoes not match a required type as specified by the matching rules."));
     }
 
+  }
+
+  /**
+   *
+   */ 
+  @Test(expected = Exception.class)
+  public final void testOperateThrow() {
+      AtomicValue item1 = new AtomicValue(1.0, Type.DAY_TIME_DURATION);
+      AtomicValue item2 = new AtomicValue("Hello", Type.DAY_TIME_DURATION);
+
+      AbstractAxis op1 = new LiteralExpr(holder.getXmlNodeReadTrx(),
+              holder.getXmlNodeReadTrx().getItemList().addItem(item1));
+      AbstractAxis op2 = new LiteralExpr(holder.getXmlNodeReadTrx(),
+              holder.getXmlNodeReadTrx().getItemList().addItem(item2));
+      AbstractObAxis axis = new SubOpAxis(holder.getXmlNodeReadTrx(), op1, op2);
+
+      // This should throw
+      axis.hasNext();
   }
 
 }

@@ -72,10 +72,12 @@ public abstract class AbstractObAxis extends AbstractAxis {
     super.reset(mNodeKey);
     mIsFirst = true;
     if (mOperand1 != null) {
+    CoverageTool.cover(24);
       mOperand1.reset(mNodeKey);
     }
 
     if (mOperand2 != null) {
+    CoverageTool.cover(43);
       mOperand2.reset(mNodeKey);
     }
   }

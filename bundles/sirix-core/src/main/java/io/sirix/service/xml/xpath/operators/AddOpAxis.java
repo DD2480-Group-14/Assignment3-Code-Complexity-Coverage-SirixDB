@@ -98,15 +98,20 @@ public class AddOpAxis extends AbstractObAxis {
     final Type mType2 = Type.getType(mOp2).getPrimitiveBaseType();
 
     if (mType1.isNumericType() && mType2.isNumericType()) {
+            CoverageTool.cover(25);
 
       // if both have the same numeric type, return it
       if (mType1 == mType2) {
+            CoverageTool.cover(26);
         return mType1;
       } else if (mType1 == Type.DOUBLE || mType2 == Type.DOUBLE) {
+            CoverageTool.cover(27);
         return Type.DOUBLE;
       } else if (mType1 == Type.FLOAT || mType2 == Type.FLOAT) {
+            CoverageTool.cover(28);
         return Type.FLOAT;
       } else {
+            CoverageTool.cover(29);
         assert (mType1 == Type.DECIMAL || mType2 == Type.DECIMAL);
         return Type.DECIMAL;
       }
@@ -115,35 +120,48 @@ public class AddOpAxis extends AbstractObAxis {
 
       switch (mType1) {
         case DATE:
+            CoverageTool.cover(30);
           if (mType2 == Type.YEAR_MONTH_DURATION || mType2 == Type.DAY_TIME_DURATION) {
+            CoverageTool.cover(31);
             return mType1;
           }
           break;
         case TIME:
+            CoverageTool.cover(32);
           if (mType2 == Type.DAY_TIME_DURATION) {
+            CoverageTool.cover(33);
             return mType1;
           }
           break;
         case DATE_TIME:
+            CoverageTool.cover(34);
           if (mType2 == Type.YEAR_MONTH_DURATION || mType2 == Type.DAY_TIME_DURATION) {
+            CoverageTool.cover(35);
             return mType1;
           }
           break;
         case YEAR_MONTH_DURATION:
+            CoverageTool.cover(36);
           if (mType2 == Type.DATE || mType2 == Type.DATE_TIME
               || mType2 == Type.YEAR_MONTH_DURATION) {
+            CoverageTool.cover(37);
             return mType2;
           }
           break;
         case DAY_TIME_DURATION:
+            CoverageTool.cover(38);
           if (mType2 == Type.DATE || mType2 == Type.TIME || mType2 == Type.DATE_TIME
               || mType2 == Type.DAY_TIME_DURATION) {
+            CoverageTool.cover(39);
             return mType2;
           }
+          CoverageTool.cover(40);
           break;
         default:
+            CoverageTool.cover(41);
           throw EXPathError.XPTY0004.getEncapsulatedException();
       }
+            CoverageTool.cover(42);
       throw EXPathError.XPTY0004.getEncapsulatedException();
     }
   }

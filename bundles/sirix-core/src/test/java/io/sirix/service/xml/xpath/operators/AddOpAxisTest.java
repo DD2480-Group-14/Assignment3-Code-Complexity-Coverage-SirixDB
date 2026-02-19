@@ -195,4 +195,17 @@ public class AddOpAxisTest {
     }
 
   }
+
+  /**
+   * Should throw exception when return types does not match.
+   */ 
+  @Test(expected = Exception.class)
+  public final void getReturnTypeThrow() {
+      AbstractAxis op1 = new SequenceAxis(holder.getXmlNodeReadTrx());
+      AbstractAxis op2 = new SequenceAxis(holder.getXmlNodeReadTrx());
+      AbstractObAxis axis = new AddOpAxis(holder.getXmlNodeReadTrx(), op1, op2);
+      axis.getReturnType(
+              holder.getXmlNodeReadTrx().keyForName("xs:dayTimeDuration"),
+              holder.getXmlNodeReadTrx().keyForName("xs:string"));
+  }
 }
