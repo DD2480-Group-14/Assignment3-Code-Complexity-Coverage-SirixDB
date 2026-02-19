@@ -26,3 +26,9 @@ The method has 52 lines of code.
 
 ## Purpose
 The method checks two Xml tree nodes for different node types. For example, if the node is an `Element`, it checks for several things, including matching names, attribute and namespace keys. The parameters are two read-only transactions of one old and one new revision.
+
+## Refactoring
+
+The method's CCN is high and it is not justified, since it can be divided into several smaller functions to reduce the complexity. 
+The method checkNodes was refactored by moving the Switch statement to a helper function, and also dividing two parts of the case `ELEMENT`
+into smaller functions.
