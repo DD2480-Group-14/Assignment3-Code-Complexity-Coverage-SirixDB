@@ -415,126 +415,167 @@ public final class JsonResourceCopy implements Callable<Void> {
    * @param rtx Sirix {@link JsonNodeReadOnlyTrx}
    */
   public void processNode(final JsonNodeReadOnlyTrx rtx, final InsertPosition insertPosition) {
+    switch (insertPosition) {
+      case InsertPosition.AS_FIRST_CHILD:
+        processNodeAsFirstChild(rtx);
+        break;
+      case InsertPosition.AS_RIGHT_SIBLING:
+        processNodeAsRightSibling(rtx);
+        break;
+      case InsertPosition.AS_LEFT_SIBLING:
+        processNodeAsLeftSibling(rtx);
+      default:
+        throw new IllegalStateException("Insert location not known!");
+    }
+  }
+
+  private void processNodeAsFirstChild(final JsonNodeReadOnlyTrx rtx) {
     switch (rtx.getKind()) {
       case JSON_DOCUMENT:
         break;
+
       case OBJECT:
-        if (insertPosition == InsertPosition.AS_FIRST_CHILD) {
-          wtx.insertObjectAsFirstChild();
-        } else if (insertPosition == InsertPosition.AS_RIGHT_SIBLING) {
-          wtx.insertObjectAsRightSibling();
-        } else if (insertPosition == InsertPosition.AS_LEFT_SIBLING) {
-          wtx.insertObjectAsLeftSibling();
-        } else {
-          throw new IllegalStateException("Insert location not known!");
-        }
+        wtx.insertObjectAsFirstChild();
         break;
+
       case ARRAY:
-        if (insertPosition == InsertPosition.AS_FIRST_CHILD) {
-          wtx.insertArrayAsFirstChild();
-        } else if (insertPosition == InsertPosition.AS_RIGHT_SIBLING) {
-          wtx.insertArrayAsRightSibling();
-        } else if (insertPosition == InsertPosition.AS_LEFT_SIBLING) {
-          wtx.insertArrayAsLeftSibling();
-        } else {
-          throw new IllegalStateException("Insert location not known!");
-        }
+        wtx.insertArrayAsFirstChild();
         break;
+
       case OBJECT_KEY:
-        if (insertPosition == InsertPosition.AS_FIRST_CHILD) {
-          final var key = rtx.getName().getLocalName();
-          rtx.moveToFirstChild();
-          switch (rtx.getKind()) {
-            case OBJECT -> wtx.insertObjectRecordAsFirstChild(key, ObjectValue.INSTANCE);
-            case ARRAY -> wtx.insertObjectRecordAsFirstChild(key, ArrayValue.INSTANCE);
-            case OBJECT_BOOLEAN_VALUE ->
-                wtx.insertObjectRecordAsFirstChild(key, BooleanValue.of(rtx.getBooleanValue()));
-            case OBJECT_NULL_VALUE -> wtx.insertObjectRecordAsFirstChild(key, NullValue.INSTANCE);
-            case OBJECT_STRING_VALUE -> wtx.insertObjectRecordAsFirstChild(key,
-                                                                           new StringValue(rtx.getValue()));
-            case OBJECT_NUMBER_VALUE -> wtx.insertObjectRecordAsFirstChild(key, new NumberValue(rtx.getNumberValue()));
-          }
-          rtx.moveToParent();
-        } else if (insertPosition == InsertPosition.AS_LEFT_SIBLING) {
-          final var key = rtx.getName().getLocalName();
-          rtx.moveToFirstChild();
-          switch (rtx.getKind()) {
-            case OBJECT -> wtx.insertObjectRecordAsLeftSibling(key, ObjectValue.INSTANCE);
-            case ARRAY -> wtx.insertObjectRecordAsLeftSibling(key, ArrayValue.INSTANCE);
-            case OBJECT_BOOLEAN_VALUE ->
-                wtx.insertObjectRecordAsLeftSibling(key, BooleanValue.of(rtx.getBooleanValue()));
-            case OBJECT_NULL_VALUE -> wtx.insertObjectRecordAsLeftSibling(key, NullValue.INSTANCE);
-            case OBJECT_STRING_VALUE -> wtx.insertObjectRecordAsLeftSibling(key,
-                                                                            new StringValue(rtx.getValue()));
-            case OBJECT_NUMBER_VALUE -> wtx.insertObjectRecordAsLeftSibling(key, new NumberValue(rtx.getNumberValue()));
-          }
-          rtx.moveToParent();
-        } else if (insertPosition == InsertPosition.AS_RIGHT_SIBLING) {
-          final var key = rtx.getName().getLocalName();
-          rtx.moveToFirstChild();
-          switch (rtx.getKind()) {
-            case OBJECT -> wtx.insertObjectRecordAsRightSibling(key, ObjectValue.INSTANCE);
-            case ARRAY -> wtx.insertObjectRecordAsRightSibling(key, ArrayValue.INSTANCE);
-            case OBJECT_BOOLEAN_VALUE ->
-                wtx.insertObjectRecordAsRightSibling(key, BooleanValue.of(rtx.getBooleanValue()));
-            case OBJECT_NULL_VALUE -> wtx.insertObjectRecordAsRightSibling(key, NullValue.INSTANCE);
-            case OBJECT_STRING_VALUE -> wtx.insertObjectRecordAsRightSibling(key,
-                                                                             new StringValue(rtx.getValue()));
-            case OBJECT_NUMBER_VALUE ->
-                wtx.insertObjectRecordAsRightSibling(key, new NumberValue(rtx.getNumberValue()));
-          }
-          rtx.moveToParent();
-        } else {
-          throw new IllegalStateException("Insert location not known!");
+        final var key = rtx.getName().getLocalName();
+        rtx.moveToFirstChild();
+        switch (rtx.getKind()) {
+          case OBJECT -> wtx.insertObjectRecordAsFirstChild(key, ObjectValue.INSTANCE);
+          case ARRAY -> wtx.insertObjectRecordAsFirstChild(key, ArrayValue.INSTANCE);
+          case OBJECT_BOOLEAN_VALUE ->
+              wtx.insertObjectRecordAsFirstChild(key, BooleanValue.of(rtx.getBooleanValue()));
+          case OBJECT_NULL_VALUE -> wtx.insertObjectRecordAsFirstChild(key, NullValue.INSTANCE);
+          case OBJECT_STRING_VALUE -> wtx.insertObjectRecordAsFirstChild(key,
+                                                                          new StringValue(rtx.getValue()));
+          case OBJECT_NUMBER_VALUE -> wtx.insertObjectRecordAsFirstChild(key, new NumberValue(rtx.getNumberValue()));
         }
         break;
+
       case BOOLEAN_VALUE:
-        if (insertPosition == InsertPosition.AS_FIRST_CHILD) {
-          wtx.insertBooleanValueAsFirstChild(rtx.getBooleanValue());
-        } else if (insertPosition == InsertPosition.AS_RIGHT_SIBLING) {
-          wtx.insertBooleanValueAsRightSibling(rtx.getBooleanValue());
-        } else if (insertPosition == InsertPosition.AS_LEFT_SIBLING) {
-          wtx.insertBooleanValueAsLeftSibling(rtx.getBooleanValue());
-        } else {
-          throw new IllegalStateException("Insert location not known!");
-        }
+        wtx.insertBooleanValueAsFirstChild(rtx.getBooleanValue());
         break;
+
       case NULL_VALUE:
-        if (insertPosition == InsertPosition.AS_FIRST_CHILD) {
-          wtx.insertNullValueAsFirstChild();
-        } else if (insertPosition == InsertPosition.AS_RIGHT_SIBLING) {
-          wtx.insertNullValueAsRightSibling();
-        } else if (insertPosition == InsertPosition.AS_LEFT_SIBLING) {
-          wtx.insertNullValueAsLeftSibling();
-        } else {
-          throw new IllegalStateException("Insert location not known!");
-        }
+        wtx.insertNullValueAsFirstChild();
         break;
+
       case NUMBER_VALUE:
-        if (insertPosition == InsertPosition.AS_FIRST_CHILD) {
-          wtx.insertNumberValueAsFirstChild(rtx.getNumberValue());
-        } else if (insertPosition == InsertPosition.AS_RIGHT_SIBLING) {
-          wtx.insertNumberValueAsRightSibling(rtx.getNumberValue());
-        } else if (insertPosition == InsertPosition.AS_LEFT_SIBLING) {
-          wtx.insertNumberValueAsLeftSibling(rtx.getNumberValue());
-        } else {
-          throw new IllegalStateException("Insert location not known!");
-        }
+        wtx.insertNumberValueAsFirstChild(rtx.getNumberValue());
         break;
+
       case STRING_VALUE:
-        if (insertPosition == InsertPosition.AS_FIRST_CHILD) {
-          wtx.insertStringValueAsFirstChild(rtx.getValue());
-        } else if (insertPosition == InsertPosition.AS_RIGHT_SIBLING) {
-          wtx.insertStringValueAsRightSibling(rtx.getValue());
-        } else if (insertPosition == InsertPosition.AS_LEFT_SIBLING) {
-          wtx.insertStringValueAsLeftSibling(rtx.getValue());
-        } else {
-          throw new IllegalStateException("Insert location not known!");
+        wtx.insertStringValueAsFirstChild(rtx.getValue());
+        break;
+
+      default:
+        throw new IllegalStateException("Node kind not known!");
+    }
+  }
+
+  private void processNodeAsRightSibling(final JsonNodeReadOnlyTrx rtx) {
+    switch (rtx.getKind()) {
+      case JSON_DOCUMENT:
+        break;
+
+      case OBJECT:
+        wtx.insertObjectAsRightSibling();
+        break;
+
+      case ARRAY:
+        wtx.insertArrayAsRightSibling();
+        break;
+
+      case OBJECT_KEY:
+        final var key = rtx.getName().getLocalName();
+        rtx.moveToFirstChild();
+        switch (rtx.getKind()) {
+          case OBJECT -> wtx.insertObjectRecordAsRightSibling(key, ObjectValue.INSTANCE);
+          case ARRAY -> wtx.insertObjectRecordAsRightSibling(key, ArrayValue.INSTANCE);
+          case OBJECT_BOOLEAN_VALUE ->
+              wtx.insertObjectRecordAsRightSibling(key, BooleanValue.of(rtx.getBooleanValue()));
+          case OBJECT_NULL_VALUE -> wtx.insertObjectRecordAsRightSibling(key, NullValue.INSTANCE);
+          case OBJECT_STRING_VALUE -> wtx.insertObjectRecordAsRightSibling(key,
+                                                                          new StringValue(rtx.getValue()));
+          case OBJECT_NUMBER_VALUE -> wtx.insertObjectRecordAsRightSibling(key, new NumberValue(rtx.getNumberValue()));
         }
         break;
-      // $CASES-OMITTED$
+
+      case BOOLEAN_VALUE:
+        wtx.insertBooleanValueAsRightSibling(rtx.getBooleanValue());
+        break;
+
+      case NULL_VALUE:
+        wtx.insertNullValueAsRightSibling();
+        break;
+
+      case NUMBER_VALUE:
+        wtx.insertNumberValueAsRightSibling(rtx.getNumberValue());
+        break;
+
+      case STRING_VALUE:
+        wtx.insertStringValueAsRightSibling(rtx.getValue());
+        break;
+
+      default:
+        throw new IllegalStateException("Node kind not known!");
+    }
+  }
+
+  private void processNodeAsLeftSibling(final JsonNodeReadOnlyTrx rtx) {
+    switch (rtx.getKind()) {
+      case JSON_DOCUMENT:
+        break;
+
+      case OBJECT:
+        wtx.insertObjectAsLeftSibling();
+        break;
+
+      case ARRAY:
+        wtx.insertArrayAsLeftSibling();
+        break;
+
+      case OBJECT_KEY:
+        final var key = rtx.getName().getLocalName();
+        rtx.moveToFirstChild();
+        switch (rtx.getKind()) {
+          case OBJECT -> wtx.insertObjectRecordAsLeftSibling(key, ObjectValue.INSTANCE);
+          case ARRAY -> wtx.insertObjectRecordAsLeftSibling(key, ArrayValue.INSTANCE);
+          case OBJECT_BOOLEAN_VALUE ->
+              wtx.insertObjectRecordAsLeftSibling(key, BooleanValue.of(rtx.getBooleanValue()));
+          case OBJECT_NULL_VALUE -> wtx.insertObjectRecordAsLeftSibling(key, NullValue.INSTANCE);
+          case OBJECT_STRING_VALUE -> wtx.insertObjectRecordAsLeftSibling(key,
+                                                                          new StringValue(rtx.getValue()));
+          case OBJECT_NUMBER_VALUE -> wtx.insertObjectRecordAsLeftSibling(key, new NumberValue(rtx.getNumberValue()));
+        }
+        break;
+
+      case BOOLEAN_VALUE:
+        wtx.insertBooleanValueAsLeftSibling(rtx.getBooleanValue());
+        break;
+
+      case NULL_VALUE:
+        wtx.insertNullValueAsLeftSibling();
+        break;
+
+      case NUMBER_VALUE:
+        wtx.insertNumberValueAsLeftSibling(rtx.getNumberValue());
+        break;
+
+      case STRING_VALUE:
+        wtx.insertStringValueAsLeftSibling(rtx.getValue());
+        break;
+
       default:
         throw new IllegalStateException("Node kind not known!");
     }
   }
 }
+
+
+
