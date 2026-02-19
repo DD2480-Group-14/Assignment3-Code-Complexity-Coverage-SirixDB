@@ -39,6 +39,7 @@ The method has 60 NLOC according to lizard.
 The function takes two operands as arguments, and returns the corresponding type for the sub operation. If the operands are not compatible, it throws errors. 
 
 ## Refactoring plan
+The method could be split into mainly three methods. The current method, a method for numerical types and a third method for other types. This would split the main body of the function and therefore reduce it's structural complexity. 
 
 ## DIY code 
 
