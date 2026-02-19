@@ -34,6 +34,7 @@ succeeds.
 |`isNCStartChar`| 11            | 24           | 26           |
 | `checkNodes`  | 52            | 18           | 17           |
 | `processNode` |               |              |              |
+| `modify`      | 49            | 22           | 17           |
 
 ### 2. Are the functions just complex, or also long?
 
@@ -55,6 +56,9 @@ The method checks two Xml tree nodes for different node types. For example, if t
 
 #### `processNode`
 
+#### `modify`
+The purpose of the method is to modify a key-value pair in a json object in the db. Depending on what datatype the key-value pair is it is branched accordingly.
+
 ### 4. Are exceptions taken into account in the given measurements?
 
 
@@ -62,13 +66,35 @@ The method checks two Xml tree nodes for different node types. For example, if t
 
 ## Refactoring
 
-Plan for refactoring complex code:
+### Refactoring plan
 
-Estimated impact of refactoring (lower CC, but other drawbacks?).
+#### `serialize`
+The high complexity is not necessary. The function could be split up into to multiple smaller functions. For example we could have one function for each data type `Atomic`, `StructuredDBItem`, `Array`, `Object` that serializes specifically that object. 
 
-Carried out refactoring (optional, P+):
+#### `iterateAxis`
+The high cyclomatic complexity is not justified in this function each case can be brought out into their own helper function.
 
-git diff ...
+This brings the complexity down to 
+Manual: 16 
+Lizard: 17 
+Which is a decrease of around 41% 
+
+#### `isNCStartChar`
+In this the case, the high complexity of the function we would argue is justified. The code is not complex because of its cyclomatic complexity instead it just has a "complex" logical check that brings high cyclomatic complexity. I guess you could add paranthesis do make it more readable but it would still not affect the cyclomatic complexity. 
+
+#### `checkNodes`
+The high cyclomatic compleixty is not justified here. We can reduce it by breaking out each case in the switch to a corresponding helper function. This would bring the cyclomatic complexity of the function down and even though the `Element` case has higher cyclomatic complexity than the other cases its cyclomatic complexity would still be in the "simple" range according to the ranges found at https://en.wikipedia.org/wiki/Cyclomatic_complexity.
+
+#### `processNode`
+
+#### `modify`
+The high cyclomatic complexity is not justified in this function the switch case can be lifted out into its own helper function. We could also lift out the entire part that runs `replaceObjectRecordValue` into its own helper function.
+
+This would bring down the cyclomatic complexity to the following:
+Lizard: 10
+Manual: 5
+
+Regardless of which formula we use we can see that the complexity decreases either by: 45% if using lizard formula, 70% if using the other. The result is however the the helper function `fullReplacement` gets a high complexity with lizard reporting 13 but this is also a decrease of 40% compared to the previous 22. 
 
 ## Coverage
 

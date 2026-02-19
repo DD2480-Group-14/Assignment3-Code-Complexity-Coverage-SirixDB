@@ -30,7 +30,7 @@ Lizard seems to use another formula that only counts decision points + 1 (it doe
 In terms of LOC the function is long with lizard reporting LOC of 49, a function should ideally fit inside one screen view which is not the case here (it depends on the font size and viewport ofc).
 
 ## Purpose
-The purpose of the function is to modify a key-value pair in a json object, presumably in the db.
+The purpose of the function is to modify a key-value pair in a json object in the db. Depending on what datatype the key-value pair is it is branched accordingly.
 
 ## Refactoring plan
 
