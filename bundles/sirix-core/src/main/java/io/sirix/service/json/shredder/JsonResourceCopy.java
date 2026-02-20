@@ -44,6 +44,8 @@ import io.sirix.settings.Constants;
 import io.sirix.settings.Fixed;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 
+import io.sirix.utils.CoverageRegister;
+
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -417,31 +419,41 @@ public final class JsonResourceCopy implements Callable<Void> {
   public void processNode(final JsonNodeReadOnlyTrx rtx, final InsertPosition insertPosition) {
     switch (rtx.getKind()) {
       case JSON_DOCUMENT:
+        CoverageRegister.register(0);
         break;
       case OBJECT:
         if (insertPosition == InsertPosition.AS_FIRST_CHILD) {
+          CoverageRegister.register(1);
           wtx.insertObjectAsFirstChild();
         } else if (insertPosition == InsertPosition.AS_RIGHT_SIBLING) {
+          CoverageRegister.register(2);
           wtx.insertObjectAsRightSibling();
         } else if (insertPosition == InsertPosition.AS_LEFT_SIBLING) {
+          CoverageRegister.register(3);
           wtx.insertObjectAsLeftSibling();
         } else {
+          CoverageRegister.register(4);
           throw new IllegalStateException("Insert location not known!");
         }
         break;
       case ARRAY:
         if (insertPosition == InsertPosition.AS_FIRST_CHILD) {
+          CoverageRegister.register(5);
           wtx.insertArrayAsFirstChild();
         } else if (insertPosition == InsertPosition.AS_RIGHT_SIBLING) {
+          CoverageRegister.register(6);
           wtx.insertArrayAsRightSibling();
         } else if (insertPosition == InsertPosition.AS_LEFT_SIBLING) {
+          CoverageRegister.register(7);
           wtx.insertArrayAsLeftSibling();
         } else {
+          CoverageRegister.register(8);
           throw new IllegalStateException("Insert location not known!");
         }
         break;
       case OBJECT_KEY:
         if (insertPosition == InsertPosition.AS_FIRST_CHILD) {
+          CoverageRegister.register(9);
           final var key = rtx.getName().getLocalName();
           rtx.moveToFirstChild();
           switch (rtx.getKind()) {
@@ -456,6 +468,7 @@ public final class JsonResourceCopy implements Callable<Void> {
           }
           rtx.moveToParent();
         } else if (insertPosition == InsertPosition.AS_LEFT_SIBLING) {
+          CoverageRegister.register(10);
           final var key = rtx.getName().getLocalName();
           rtx.moveToFirstChild();
           switch (rtx.getKind()) {
@@ -470,6 +483,7 @@ public final class JsonResourceCopy implements Callable<Void> {
           }
           rtx.moveToParent();
         } else if (insertPosition == InsertPosition.AS_RIGHT_SIBLING) {
+          CoverageRegister.register(11);
           final var key = rtx.getName().getLocalName();
           rtx.moveToFirstChild();
           switch (rtx.getKind()) {
@@ -485,55 +499,73 @@ public final class JsonResourceCopy implements Callable<Void> {
           }
           rtx.moveToParent();
         } else {
+          CoverageRegister.register(12);
           throw new IllegalStateException("Insert location not known!");
         }
         break;
       case BOOLEAN_VALUE:
         if (insertPosition == InsertPosition.AS_FIRST_CHILD) {
+          CoverageRegister.register(13);
           wtx.insertBooleanValueAsFirstChild(rtx.getBooleanValue());
         } else if (insertPosition == InsertPosition.AS_RIGHT_SIBLING) {
+          CoverageRegister.register(14);
           wtx.insertBooleanValueAsRightSibling(rtx.getBooleanValue());
         } else if (insertPosition == InsertPosition.AS_LEFT_SIBLING) {
+          CoverageRegister.register(15);
           wtx.insertBooleanValueAsLeftSibling(rtx.getBooleanValue());
         } else {
+          CoverageRegister.register(16);
           throw new IllegalStateException("Insert location not known!");
         }
         break;
       case NULL_VALUE:
         if (insertPosition == InsertPosition.AS_FIRST_CHILD) {
+          CoverageRegister.register(17);
           wtx.insertNullValueAsFirstChild();
         } else if (insertPosition == InsertPosition.AS_RIGHT_SIBLING) {
+          CoverageRegister.register(18);
           wtx.insertNullValueAsRightSibling();
         } else if (insertPosition == InsertPosition.AS_LEFT_SIBLING) {
+          CoverageRegister.register(19);
           wtx.insertNullValueAsLeftSibling();
         } else {
+          CoverageRegister.register(20);
           throw new IllegalStateException("Insert location not known!");
         }
         break;
       case NUMBER_VALUE:
         if (insertPosition == InsertPosition.AS_FIRST_CHILD) {
+          CoverageRegister.register(21);
           wtx.insertNumberValueAsFirstChild(rtx.getNumberValue());
         } else if (insertPosition == InsertPosition.AS_RIGHT_SIBLING) {
+          CoverageRegister.register(22);
           wtx.insertNumberValueAsRightSibling(rtx.getNumberValue());
         } else if (insertPosition == InsertPosition.AS_LEFT_SIBLING) {
+          CoverageRegister.register(23);
           wtx.insertNumberValueAsLeftSibling(rtx.getNumberValue());
         } else {
+          CoverageRegister.register(24);
           throw new IllegalStateException("Insert location not known!");
         }
         break;
       case STRING_VALUE:
         if (insertPosition == InsertPosition.AS_FIRST_CHILD) {
+          CoverageRegister.register(25);
           wtx.insertStringValueAsFirstChild(rtx.getValue());
         } else if (insertPosition == InsertPosition.AS_RIGHT_SIBLING) {
+          CoverageRegister.register(26);
           wtx.insertStringValueAsRightSibling(rtx.getValue());
         } else if (insertPosition == InsertPosition.AS_LEFT_SIBLING) {
+          CoverageRegister.register(27);
           wtx.insertStringValueAsLeftSibling(rtx.getValue());
         } else {
+          CoverageRegister.register(28);
           throw new IllegalStateException("Insert location not known!");
         }
         break;
       // $CASES-OMITTED$
       default:
+        CoverageRegister.register(29);
         throw new IllegalStateException("Node kind not known!");
     }
   }
