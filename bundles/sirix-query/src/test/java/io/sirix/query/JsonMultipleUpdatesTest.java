@@ -447,5 +447,45 @@ public final class JsonMultipleUpdatesTest extends AbstractJsonTest {
     test(storeQuery, updateQuery, openQuery, assertion);
   }
 
+  /**
+   * Test replace operation that change from string to number,
+   * forces modify function to do full replacement in the 
+   * number case  
+   */
+  @Test
+  public void testReplaceOperationChangeStringToNumber() throws IOException {
+    final String storeQuery = """
+        jn:store('json-path1','mydoc.jn','{"testtest": "text"}')
+        """;
+    final String updateQuery = """
+        let $doc := jn:doc('json-path1','mydoc.jn')
+        return replace json value of $doc.testtest with 1337
+        """;
+    final String openQuery = "jn:doc('json-path1','mydoc.jn')";
+    final String assertion = """
+        {"testtest":1337}
+        """.strip();
+    test(storeQuery, updateQuery, openQuery, assertion);
+  }
 
+  /**
+   * Test replace operation that change from string to boolean,
+   * forces modify function to do full replacement in the 
+   * boolean case  
+   */
+  @Test
+  public void testReplaceOperationChangeStringToBoolean() throws IOException {
+    final String storeQuery = """
+        jn:store('json-path1','mydoc.jn','{"testtest": "text"}')
+        """;
+    final String updateQuery = """
+        let $doc := jn:doc('json-path1','mydoc.jn')
+        return replace json value of $doc.testtest with 1337
+        """;
+    final String openQuery = "jn:doc('json-path1','mydoc.jn')";
+    final String assertion = """
+        {"testtest":1337}
+        """.strip();
+    test(storeQuery, updateQuery, openQuery, assertion);
+  }
 }
