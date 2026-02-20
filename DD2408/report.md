@@ -112,11 +112,18 @@ Below is a table that shows the branch coverage for the different methods before
 
 | Method        | Current       | Improved     | Extra (P+)   |
 | :-----------: | :-----------: | :-----------:| :----------: |
-| `serialize`   |               |              |              |
+| `serialize`   |  7            |  16          |              |
 | `modify`      |  4            |  6           | 8            |
 |`isNCStartChar`|  2            |  4           |              |
 |`getReturnType`| 20            | 22           | 24           |
 | `processNode` | 10            | 17           | 27           |
+
+### `serialize`
+The method `serialize` contains multiple branches depending on the type of items in the Sequence, as well as formatting behaviour such as pretty printing and handling of first serialized item. The existing tests mainly focuses on structured JSON nodes. This results in branches related to atomic values and formatting not being covered.
+
+To improve coverage, test was added to serialize atomic sequences with `prettyPrint = true` (`testSerializerWithAtomicValuesAndPrettyPrint()`), which forces the method to enter the branch that handles atomic values. Another test was added to test multiple serialize calls (`testSerializerMultipleSerializeCalls()`) and improve coverage of state handling in the serializer, specifically the branch that checks whether serialization has already started.
+
+See `testSerializerWithAtomicValuesAndPrettyPrint()` and `testSerializerMultipleSerializeCalls()` [here](https://github.com/DD2480-Group-14/Assignment3-Code-Complexity-Coverage-SirixDB/blob/improved-coverage/bundles/sirix-query/src/test/java/io/sirix/query/function/jn/diff/DiffTest.java).
 
 ### `modify`
 
