@@ -125,7 +125,7 @@ Number of test cases added: two per team member (P) or at least four (P+).
 | `iterateAxis` |               |              |              |
 |`isNCStartChar`|               |              |              |
 |`getReturnType`|               |              |              |
-| `processNode` | 10            |              | 27           |
+| `processNode` | 10            | 17           | 27           |
 
 ### processNode
 
