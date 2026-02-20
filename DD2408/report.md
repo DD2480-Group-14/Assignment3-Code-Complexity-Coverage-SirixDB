@@ -7,6 +7,7 @@ has to be delivered in a standard, cross-platform format.
 ## P+
 The following people are going for P+:
 - Melker Trané (processNode)
+\- Edwin Nordås Jogensjö (getReturnType)
 - Vidar Nykvist (modify)
 
 ## Project
@@ -88,6 +89,12 @@ Please see [Commit](https://github.com/DD2480-Group-14/Assignment3-Code-Complexi
 
 The processNode function now has a CCN of 4 while the 3 helper functions each has a CCN of 14.
 
+### `getReturnType`
+Similar to above, the high complexity is not needed. The function can be split into two additional functions. One that takes care of the numerical types, and one that takes care of the other types.
+
+#### P+ Implementation (Edwin Nordås Jogensjö)
+See the branch p-plus-edwin in `bundles/sirix-core/src/main/java/io/sirix/service/xml/xpath/operators/SubOpAxis.java`. The refactored `getReturnType` now has a CCN of 2, while the one for numerical types have CCN = 4 and the other have CCN = 7.
+
 ## Coverage
 
 For our ad hoc coverage tool we have a CoverageRegister singleton. This singleton has fixed length array of boolean values where the value at a certain position correspond to whether a certain branch has been covered or not. In every branch we add a line which "registers" that branch as visited (eg. 'CoverageRegister.register(3)' for the forth branch). When all tests are executed we call a 'getReport' method on the singleton which returns a string with contains information on what branches were covered and what branches were not.
@@ -103,7 +110,7 @@ Below is a table that shows the branch coverage for the different methods before
 | `serialize`   |               |              |              |
 | `modify`      |  4            |  6           | 8            |
 |`isNCStartChar`|  2            |  4           |              |
-|`getReturnType`|               |              |              |
+|`getReturnType`| 20            | 22           | 24           |
 | `processNode` | 10            | 17           | 27           |
 
 ### `modify`
@@ -134,6 +141,17 @@ When inserting as last child, we assert that we throw exceptions since this is n
 See branch extra-coverage-melker and the file bundles/sirix-core/src/test/java/io/sirix/service/json/shredder/JsonResourceCopyTest.java
 
 Please see [File](https://github.com/DD2480-Group-14/Assignment3-Code-Complexity-Coverage-SirixDB/blob/extra-coverage-melker/bundles/sirix-core/src/test/java/io/sirix/service/json/shredder/JsonResourceCopyTest.java)
+
+### getReturnType
+
+The method can compare either numerical values or other values. If both input types are of numerical values, the method returns `DOUBLE`, `FLOAT` or `DECIMAL` as the type depending on the primitive base type of the values. The coverage of this was improved by creating a test that asserts that the method returns double if the first operand is a double, and the other is another numerical type. We also added a test that assures that the method returns a `TIME` type if the parameters are of type `TIME` and `DAY_TIME_DURATION`.
+
+#### Extra tests P+ (Edwin Nordås Jogensjö)
+One extra test could be made to improve coverage for when the first input parameter is of type `DECIMAL`, and the other type is `FLOAT`. This covers another branch in the function, and asserts that the return is of type `FLOAT`. 
+
+Additionally, one other test was made to assert that the program throws an error. However, this test needed a slight modification of the code since the way it was written before made it impossible to reach this branch. When trying to convert the two input parameters to their primitive base types, the function expects an `IllegalStateException` to be thrown if one of the parameters does not have a primitive base type. However, this exception will not be thrown anywhere by the program, but instead a `SiriXPathException`. Therefore, I modified the try-catch statement in `getReturnType` to expect this exception, and added a test for when this should be thrown.
+
+See the branch `p-plus-edwin` in file `bundles/sirix-core/src/test/java/io/sirix/service/xml/xpath/operators/SubOpAxisTest.java` for implementation.
 
 ## Self-assessment: Way of working
 
