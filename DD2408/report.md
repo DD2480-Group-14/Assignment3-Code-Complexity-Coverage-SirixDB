@@ -7,6 +7,7 @@ has to be delivered in a standard, cross-platform format.
 ## P+
 The following people are going for P+:
 - Melker Trané (processNode)
+- Edwin Nordås Jogensjö (getReturnType)
 
 ## Project
 
