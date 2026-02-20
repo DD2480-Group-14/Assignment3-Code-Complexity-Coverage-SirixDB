@@ -86,75 +86,143 @@ public class SubOpAxis extends AbstractObAxis {
 
   }
 
-  /**
+
+    /**
+     * Helper method for getReturnType
+     *
+     * Checks numerical types
+     */ 
+    private Type getReturnTypeNumerical(Type type1, Type type2) {
+          // if both have the same numeric type, return it
+          if (type1 == type2) {
+              CoverageTool.cover(1);
+              return type1;
+          }
+
+          if (type1 == Type.DOUBLE || type2 == Type.DOUBLE) {
+
+              if (type1 == Type.DOUBLE) {
+                  CoverageTool.cover(2);
+              } else {
+                  CoverageTool.cover(3);
+              }
+
+              return Type.DOUBLE;
+          } else if (type1 == Type.FLOAT || type2 == Type.FLOAT) {
+
+              if (type1 == Type.FLOAT) {
+                  CoverageTool.cover(4);
+              } else {
+                  CoverageTool.cover(5);
+              }
+
+              return Type.FLOAT;
+          } else {
+
+              if (type1 == Type.DECIMAL) {
+                  CoverageTool.cover(6);
+              } else {
+                  CoverageTool.cover(7);
+              }
+
+              assert (type1 == Type.DECIMAL || type2 == Type.DECIMAL);
+              return Type.DECIMAL;
+          }
+    } 
+
+    /**
+     * Helper method for getReturnTyp
+     *
+     * Checks other types than numerical
+     */ 
+    private Type getReturnTypeOther(Type type1, Type type2) {
+            switch (type1) {
+              case DATE:
+                  CoverageTool.cover(8);
+                  if (type2 == Type.YEAR_MONTH_DURATION || type2 == Type.DAY_TIME_DURATION) {
+
+                      if (type2 == Type.YEAR_MONTH_DURATION) {
+                          CoverageTool.cover(9);
+                      } else {
+                          CoverageTool.cover(10);
+                      }
+
+                      return type1;
+                  } else if (type2 == Type.DATE) {
+                      CoverageTool.cover(11);
+                      return Type.DAY_TIME_DURATION;
+                  }
+                  break;
+              case TIME:
+                  CoverageTool.cover(12);
+                  if (type2 == Type.DAY_TIME_DURATION) {
+                      CoverageTool.cover(13);
+                      return type1;
+                  } else if (type2 == Type.TIME) {
+                      CoverageTool.cover(14);
+                      return Type.DAY_TIME_DURATION;
+                  }
+                  break;
+              case DATE_TIME:
+                  CoverageTool.cover(15);
+                  if (type2 == Type.YEAR_MONTH_DURATION || type2 == Type.DAY_TIME_DURATION) {
+
+                      if (type2 == Type.YEAR_MONTH_DURATION) {
+                          CoverageTool.cover(16);
+                      } else {
+                          CoverageTool.cover(17);
+                      }
+
+                      return type1;
+                  } else if (type2 == Type.DATE_TIME) {
+                      CoverageTool.cover(18);
+                      return Type.DAY_TIME_DURATION;
+                  }
+                  break;
+              case YEAR_MONTH_DURATION:
+                  CoverageTool.cover(19);
+                  if (type2 == Type.YEAR_MONTH_DURATION) {
+                      CoverageTool.cover(20);
+                      return type2;
+                  }
+                  break;
+              case DAY_TIME_DURATION:
+                  CoverageTool.cover(21);
+                  if (type2 == Type.DAY_TIME_DURATION) {
+                      CoverageTool.cover(22);
+                      return type2;
+                  }
+                  break;
+              default:
+                  CoverageTool.cover(23);
+                  throw new XPathError(XPathError.ErrorType.XPTY0004);
+          }
+          CoverageTool.cover(24);
+          throw new XPathError(XPathError.ErrorType.XPTY0004);
+    }
+
+ /**
    * {@inheritDoc}
    */
   @Override
   protected Type getReturnType(final int mOp1, final int mOp2) throws SirixXPathException {
 
-    Type type1;
-    Type type2;
-    try {
-      type1 = Type.getType(mOp1).getPrimitiveBaseType();
-      type2 = Type.getType(mOp2).getPrimitiveBaseType();
-    } catch (final IllegalStateException e) {
-      throw new XPathError(XPathError.ErrorType.XPTY0004);
-    }
-
-    if (type1.isNumericType() && type2.isNumericType()) {
-
-      // if both have the same numeric type, return it
-      if (type1 == type2) {
-        return type1;
-      }
-
-      if (type1 == Type.DOUBLE || type2 == Type.DOUBLE) {
-        return Type.DOUBLE;
-      } else if (type1 == Type.FLOAT || type2 == Type.FLOAT) {
-        return Type.FLOAT;
-      } else {
-        assert (type1 == Type.DECIMAL || type2 == Type.DECIMAL);
-        return Type.DECIMAL;
-      }
-
-    } else {
-
-      switch (type1) {
-        case DATE:
-          if (type2 == Type.YEAR_MONTH_DURATION || type2 == Type.DAY_TIME_DURATION) {
-            return type1;
-          } else if (type2 == Type.DATE) {
-            return Type.DAY_TIME_DURATION;
-          }
-          break;
-        case TIME:
-          if (type2 == Type.DAY_TIME_DURATION) {
-            return type1;
-          } else if (type2 == Type.TIME) {
-            return Type.DAY_TIME_DURATION;
-          }
-          break;
-        case DATE_TIME:
-          if (type2 == Type.YEAR_MONTH_DURATION || type2 == Type.DAY_TIME_DURATION) {
-            return type1;
-          } else if (type2 == Type.DATE_TIME) {
-            return Type.DAY_TIME_DURATION;
-          }
-          break;
-        case YEAR_MONTH_DURATION:
-          if (type2 == Type.YEAR_MONTH_DURATION) {
-            return type2;
-          }
-          break;
-        case DAY_TIME_DURATION:
-          if (type2 == Type.DAY_TIME_DURATION) {
-            return type2;
-          }
-          break;
-        default:
+      Type type1;
+      Type type2;
+      try {
+          type1 = Type.getType(mOp1).getPrimitiveBaseType();
+          type2 = Type.getType(mOp2).getPrimitiveBaseType();
+      } catch (final Exception e) {
+          CoverageTool.cover(0);
           throw new XPathError(XPathError.ErrorType.XPTY0004);
       }
-      throw new XPathError(XPathError.ErrorType.XPTY0004);
+
+      if (type1.isNumericType() && type2.isNumericType()) {
+
+          CoverageTool.cover(25);
+          return getReturnTypeNumerical(type1, type2);
+      } else {
+          return getReturnTypeOther(type1, type2);
     }
   }
 
