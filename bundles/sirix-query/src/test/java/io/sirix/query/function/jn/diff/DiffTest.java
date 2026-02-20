@@ -42,11 +42,6 @@ public final class DiffTest {
     JsonTestHelper.deleteEverything();
   }
 
-  @AfterAll
-  static void report() {
-      CoverageRegister.printReport();
-  } 
-
   @Test
   public void test_whenMultipleRevisionsExist_thenDiff() throws IOException {
     JsonTestHelper.createTestDocumentWithDeweyIdsEnabled();
