@@ -298,3 +298,4 @@ class CoverageTool {
             System.out.println(e.toString());
         }
     }
+}
