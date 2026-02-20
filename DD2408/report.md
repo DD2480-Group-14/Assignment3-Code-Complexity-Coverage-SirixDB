@@ -146,7 +146,7 @@ Two extra tests was made. The first tests every pair which inserts as first chil
 
 When inserting as last child, we assert that we throw exceptions since this is not supported by the 'processNode' function.
 
-See branch melker-extra-coverage
+See branch extra-coverage-melker
 
 ## Self-assessment: Way of working
 
