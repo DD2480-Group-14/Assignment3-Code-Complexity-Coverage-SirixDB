@@ -57,9 +57,3 @@ This brings down the complexity to the following:
 
 Total: pi - s + 2 = 10 - 6 + 2 = 5
 Lizard now reports CCN as 10 which we also can count to if we use the same formula as previously mentioned 5 + 4 + 1 = 10.
-
-Regardless of which formula we use we can see that the complexity decreases either by:
-45% if using lizard formula
-70% if using the other
-
-The result is however the the helper function `fullReplacement` gets a high complexity with lizard reporting 13 but this is also a decrease of 40% compared to the previous 22. 

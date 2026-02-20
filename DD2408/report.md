@@ -7,6 +7,7 @@ has to be delivered in a standard, cross-platform format.
 ## P+
 The following people are going for P+:
 - Melker Trané (processNode)
+- Vidar Nykvist (modify)
 
 ## Project
 
@@ -75,6 +76,17 @@ Carried out refactoring (optional, P+):
 
 git diff ...
 
+### `modify`
+
+The high cyclomatic complexity is not justified in this function, for example the switch case can that does a full replacement can be lifted out into its own helper function.
+
+#### P+ Implementation (Vidar Nykvist)
+See branch `vidar-refactor-modify-function` for the implementation.
+
+or follow [this](https://github.com/DD2480-Group-14/Assignment3-Code-Complexity-Coverage-SirixDB/blob/vidar-refactor-modify-function/bundles/sirix-query/src/main/java/io/sirix/query/json/JsonDBObject.java) url.
+
+The modify function now has a CCN of 5 (10 reported by Lizard) instead.   
+
 ### `processNode`
 The high complexity is not needed. We can split the function into smaller parts which each take care of a insert location.
 
@@ -128,7 +140,7 @@ Number of test cases added: two per team member (P) or at least four (P+).
 | Method        | Current       | Improved     | Extra (P+)   |
 | :-----------: | :-----------: | :-----------:| :----------: |
 | `serialize`   |               |              |              |
-| `iterateAxis` |               |              |              |
+| `modify`      |  4            |  6           | 8            |
 |`isNCStartChar`|               |              |              |
 |`getReturnType`|               |              |              |
 | `processNode` | 10            | 17           | 27           |
