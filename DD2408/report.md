@@ -84,6 +84,8 @@ The high complexity is not needed. We can split the function into smaller parts 
 #### P+ Implementation (Melker Trané)
 For an implimentation of the refactor, see branch refactor-melker and file bundles/sirix-core/src/main/java/io/sirix/service/json/shredder/JsonResourceCopy.java
 
+Please see [Commit](https://github.com/DD2480-Group-14/Assignment3-Code-Complexity-Coverage-SirixDB/commit/d0d1f563291476472e126a3b5b856b987bbe1192#diff-7f72cbacc86cd63a6f669fbbb93e8e93bd3b89dd35cd47e4ca0f1740ecced9e1) and [File](https://github.com/DD2480-Group-14/Assignment3-Code-Complexity-Coverage-SirixDB/blob/refactor-melker/bundles/sirix-core/src/main/java/io/sirix/service/json/shredder/JsonResourceCopy.java)
+
 The processNode function now has a CCN of 4 while the 3 helper functions each has a CCN of 14.
 
 ## Coverage
@@ -130,6 +132,8 @@ Two extra tests was made. The first tests every pair which inserts as first chil
 When inserting as last child, we assert that we throw exceptions since this is not supported by the 'processNode' function.
 
 See branch extra-coverage-melker and the file bundles/sirix-core/src/test/java/io/sirix/service/json/shredder/JsonResourceCopyTest.java
+
+Please see [File](https://github.com/DD2480-Group-14/Assignment3-Code-Complexity-Coverage-SirixDB/blob/extra-coverage-melker/bundles/sirix-core/src/test/java/io/sirix/service/json/shredder/JsonResourceCopyTest.java)
 
 ## Self-assessment: Way of working
 
