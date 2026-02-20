@@ -85,7 +85,7 @@ For an implimentation of the refactor, see branch refactor-melker. The processNo
 Similar to above, the high complexity is not needed. The function can be split into two additional functions. One that takes care of the numerical types, and one that takes care of the other types.
 
 #### P+ Implementation (Edwin Nordås Jogensjö)
-See the branch p-plus-edwin. The refactored `getReturnType` now has a CCN of 2, while the one for numerical types have CCN = 4 and the other have CCN = 7.
+See the branch p-plus-edwin in `bundles/sirix-core/src/main/java/io/sirix/service/xml/xpath/operators/SubOpAxis.java`. The refactored `getReturnType` now has a CCN of 2, while the one for numerical types have CCN = 4 and the other have CCN = 7.
 
 ## Coverage
 
@@ -162,6 +162,8 @@ The method can compare either numerical values or other values. If both input ty
 One extra test could be made to improve coverage for when the first input parameter is of type `DECIMAL`, and the other type is `FLOAT`. This covers another branch in the function, and asserts that the return is of type `FLOAT`. 
 
 Additionally, one other test was made to assert that the program throws an error. However, this test needed a slight modification of the code since the way it was written before made it impossible to reach this branch. When trying to convert the two input parameters to their primitive base types, the function expects an `IllegalStateException` to be thrown if one of the parameters does not have a primitive base type. However, this exception will not be thrown anywhere by the program, but instead a `SiriXPathException`. Therefore, I modified the try-catch statement in `getReturnType` to expect this exception, and added a test for when this should be thrown.
+
+See the branch `p-plus-edwin` in file `bundles/sirix-core/src/test/java/io/sirix/service/xml/xpath/operators/SubOpAxisTest.java` for implementation.
 
 ## Self-assessment: Way of working
 
