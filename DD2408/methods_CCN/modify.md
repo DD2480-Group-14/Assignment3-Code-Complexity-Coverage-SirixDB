@@ -32,6 +32,13 @@ In terms of LOC the function is long with lizard reporting LOC of 49, a function
 ## Purpose
 The purpose of the function is to modify a key-value pair in a json object in the db. Depending on what datatype the key-value pair is it is branched accordingly.
 
+## Coverage
+
+Current coverage is 4/17
+
+The replace function is only tested with string, number and an object.
+
+
 ## Refactoring plan
 
 The high cyclomatic complexity is not justified in this function, for example the switch case can that does a full replacement can be lifted out into its own helper function.
