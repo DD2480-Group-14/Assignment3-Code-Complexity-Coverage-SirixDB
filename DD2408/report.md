@@ -92,6 +92,8 @@ The processNode function now has a CCN of 4 while the 3 helper functions each ha
 
 For our ad hoc coverage tool we have a CoverageRegister singleton. This singleton has fixed length array of boolean values where the value at a certain position correspond to whether a certain branch has been covered or not. In every branch we add a line which "registers" that branch as visited (eg. 'CoverageRegister.register(3)' for the forth branch). When all tests are executed we call a 'getReport' method on the singleton which returns a string with contains information on what branches were covered and what branches were not.
 
+We also used another coverage tool, CoverageTool, which works similar to the above. However, the CoverageRegister output was not always visible in the standard output, and therefore we have an additional tool that writes the coverage to a file each time it is updated. 
+
 ## Coverage improvement
 
 The branches that contain the improvements is called "improved-coverage"
