@@ -27,25 +27,17 @@
  */
 package io.sirix.query;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashSet;
 import static java.util.Objects.requireNonNull;
 import java.util.Set;
-
-
-import java.util.ArrayList;
-
-import java.nio.file.Files;
-import java.io.File;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 
 import io.brackit.query.atomic.Atomic;
 import io.brackit.query.jdm.Item;
@@ -57,7 +49,6 @@ import io.brackit.query.jdm.json.Object;
 import io.brackit.query.util.serialize.Serializer;
 import io.brackit.query.util.serialize.StringSerializer;
 import io.sirix.api.json.JsonNodeReadOnlyTrx;
-import io.sirix.query.coverage.CoverageRegister;
 import io.sirix.service.json.serialize.JsonSerializer;
 
 /**

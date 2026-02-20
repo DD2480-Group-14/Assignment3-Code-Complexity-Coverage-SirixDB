@@ -13,7 +13,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.AfterAll;
 
 import com.google.gson.JsonParser;
 
@@ -24,7 +23,6 @@ import io.sirix.access.trx.node.json.objectvalue.StringValue;
 import io.sirix.query.JsonDBSerializer;
 import io.sirix.query.SirixCompileChain;
 import io.sirix.query.SirixQueryContext;
-import io.sirix.query.coverage.CoverageRegister;
 import io.sirix.query.json.BasicJsonDBStore;
 import io.sirix.service.json.shredder.JsonShredder;
 
