@@ -5,7 +5,11 @@ import io.sirix.access.trx.node.json.objectvalue.ArrayValue;
 import io.sirix.axis.DescendantAxis;
 import io.sirix.service.InsertPosition;
 import io.sirix.service.json.serialize.JsonSerializer;
+import io.sirix.utils.CoverageRegister;
+
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -32,6 +36,16 @@ public final class JsonResourceCopyTest {
     JsonTestHelper.deleteEverything();
   }
 
+  @BeforeAll
+  public static void setBranches() {
+    CoverageRegister.setBranchCount(30);
+  }
+
+  @AfterAll
+  public static void printReport() {
+    CoverageRegister.printReport();
+  }
+  
   @Test
   public void test_when_inserted_as_first_child_or_as_right_sibling_if_is_as_excepted() {
     JsonTestHelper.createTestDocument();
