@@ -353,32 +353,35 @@ public final class JsonDBObject extends AbstractItem
 
     // Types differ - move back to parent OBJECT_KEY and do full replacement
     trx.moveToParent();
-
-    if (value instanceof Array) {
-      trx.replaceObjectRecordValue(new ArrayValue());
-      insertSubtree(value, trx);
-    } else if (value instanceof Object) {
-      trx.replaceObjectRecordValue(new ObjectValue());
-      insertSubtree(value, trx);
-    } else if (value instanceof Str str) {
-      trx.replaceObjectRecordValue(new StringValue(str.stringValue()));
-    } else if (value instanceof Null) {
-      trx.replaceObjectRecordValue(new NullValue());
-    } else if (value instanceof Bool bool) {
-      trx.replaceObjectRecordValue(new BooleanValue(bool.booleanValue()));
-    } else if (value instanceof Numeric) {
-      switch (value) {
-        case Int anInt -> trx.replaceObjectRecordValue(new NumberValue(anInt.intValue()));
-        case Int32 int32 -> trx.replaceObjectRecordValue(new NumberValue(int32.intValue()));
-        case Int64 int64 -> trx.replaceObjectRecordValue(new NumberValue(int64.longValue()));
-        case Flt flt -> trx.replaceObjectRecordValue(new NumberValue(flt.floatValue()));
-        case Dbl dbl -> trx.replaceObjectRecordValue(new NumberValue(dbl.doubleValue()));
-        case Dec dec -> trx.replaceObjectRecordValue(new NumberValue(dec.decimalValue()));
-        default -> {
-        }
-      }
-    }
+	fullReplaceMent(trx, value);
   }
+
+	private void fullReplaceMent(JsonNodeTrx trx, Sequence value) {
+		    if (value instanceof Array) {
+		      trx.replaceObjectRecordValue(new ArrayValue());
+		      insertSubtree(value, trx);
+		    } else if (value instanceof Object) {
+		      trx.replaceObjectRecordValue(new ObjectValue());
+		      insertSubtree(value, trx);
+		    } else if (value instanceof Str str) {
+		      trx.replaceObjectRecordValue(new StringValue(str.stringValue()));
+		    } else if (value instanceof Null) {
+		      trx.replaceObjectRecordValue(new NullValue());
+		    } else if (value instanceof Bool bool) {
+		      trx.replaceObjectRecordValue(new BooleanValue(bool.booleanValue()));
+		    } else if (value instanceof Numeric) {
+		      switch (value) {
+			case Int anInt -> trx.replaceObjectRecordValue(new NumberValue(anInt.intValue()));
+			case Int32 int32 -> trx.replaceObjectRecordValue(new NumberValue(int32.intValue()));
+			case Int64 int64 -> trx.replaceObjectRecordValue(new NumberValue(int64.longValue()));
+			case Flt flt -> trx.replaceObjectRecordValue(new NumberValue(flt.floatValue()));
+			case Dbl dbl -> trx.replaceObjectRecordValue(new NumberValue(dbl.doubleValue()));
+			case Dec dec -> trx.replaceObjectRecordValue(new NumberValue(dec.decimalValue()));
+			default -> {
+			}
+		      }
+		    }
+	}
 
   private void setNumericValue(JsonNodeTrx trx, Sequence value) {
     switch (value) {
