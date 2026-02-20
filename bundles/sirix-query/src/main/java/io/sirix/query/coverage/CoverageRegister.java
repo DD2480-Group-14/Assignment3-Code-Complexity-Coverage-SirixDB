@@ -1,8 +1,12 @@
 package io.sirix.query.coverage;
 
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class CoverageRegister {
     private static int branches = 20;
     private static final boolean[] register = new boolean[20];
+
     public static void register(int id) {
         register[id] = true;
     }
@@ -18,15 +22,21 @@ public class CoverageRegister {
     }
 
     public static String getReport() {
-        String result = "";
+        StringBuilder sb = new StringBuilder();
+        sb.append("HitRate: ").append(getHitCount()).append("/").append(branches).append("\n");
+
         for (int i = 0; i < branches; i++) {
-            result += i + ": " + register[i] + "\n";
+            sb.append("Branch ID ").append(i).append(": ").append(register[i]).append("\n");
         } 
-        return "HitRate: " + getHitCount() + "/" + branches + "\n" + result;
+        return sb.toString();
     }
 
     public static void printReport() {
-        System.out.println(getReport()); 
+        try (FileWriter  writer = new FileWriter("serialize_coverage.txt")){
+            writer.write(getReport());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void setBranchCount(int count) {
