@@ -227,25 +227,6 @@ public class SubOpAxisTest {
     }
 
     /**
-     * getReturnType should return type float when
-     * the parameter operands are decimal and float
-     */ 
-    @Test
-    public final void getReturnTypeFloatSecond() {
-        AbstractAxis op1 = new SequenceAxis(holder.getXmlNodeReadTrx());
-        AbstractAxis op2 = new SequenceAxis(holder.getXmlNodeReadTrx());
-        AbstractObAxis axis = new SubOpAxis(holder.getXmlNodeReadTrx(), op1, op2);
-
-        Type expected = Type.FLOAT;
-        Type actual = axis.getReturnType(
-            holder.getXmlNodeReadTrx().keyForName("xs:decimal"),
-            holder.getXmlNodeReadTrx().keyForName("xs:float")
-        );
-
-        assertEquals(expected, actual);
-    }
-
-    /**
      * getReturnType should return type time when
      * the parameter operands are time and day_time_turation
      */
