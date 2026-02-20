@@ -30,7 +30,7 @@ Lizard seems to use another formula that only counts decision points + 1 (it doe
 In terms of LOC the function is long with lizard reporting LOC of 49, a function should ideally fit inside one screen view which is not the case here (it depends on the font size and viewport ofc).
 
 ## Purpose
-The purpose of the function is to modify a key-value pair in a json object in the db. Depending on what datatype the key-value pair is it is branched accordingly.
+The purpose of the function is to modify a key-value pair in a json object in the db. Depending on what datatype the existing value is and what datatype it is changed to, it branched accordingly.
 
 ## Coverage
 
@@ -41,13 +41,13 @@ The replace function is only tested with string, number and an object.
 
 ## Refactoring plan
 
-The high cyclomatic complexity is not justified in this function, for example the switch case can that does a full replacement can be lifted out into its own helper function.
+The high cyclomatic complexity is not justified in this function, for example the branch where we do a full replacement can be lifted out into its own helper function and then the switch case that does a numeric full replacement can be brought out into an additional helper function. 
 
 See branch `vidar-refactor-modify-function` for the implementation.
 
 or follow [this](https://github.com/DD2480-Group-14/Assignment3-Code-Complexity-Coverage-SirixDB/blob/vidar-refactor-modify-function/bundles/sirix-query/src/main/java/io/sirix/query/json/JsonDBObject.java) url.
 
-### Cyclomatic complexity
+### Cyclomatic complexity after refactoring
 
 This brings down the complexity to the following:
 
@@ -56,4 +56,18 @@ This brings down the complexity to the following:
 6 `return`
 
 Total: pi - s + 2 = 10 - 6 + 2 = 5
-Lizard now reports CCN as 10 which we also can count to if we use the same formula as previously mentioned 5 + 4 + 1 = 10.
+
+#### Helper functions
+
+The helper function `fullReplaceMent` gets a complexity of 7
+
+6 `if`
+1 `implicit return`
+Total: 6 + 2 -1 = 7 
+
+
+The helper function `fullReplacementNumeric` gets a complexity of 7
+
+6 `case`
+1 `implicit return`
+Total: 6 + 2 -1 = 7 
