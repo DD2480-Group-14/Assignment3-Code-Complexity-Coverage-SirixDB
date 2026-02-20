@@ -73,14 +73,6 @@ import org.sirix.node.Kind;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Files;
-import java.io.File;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-
 /**
  * 
  * <p>
@@ -591,73 +583,55 @@ public final class NodeWrapper implements SiblingCountingNode {
 			final NodeReadTrx rtx = createRtxAndMove();
 
 			if (LOGGER.isDebugEnabled()) {
-				CoverageTool.cover(0);
 				LOGGER.debug("NODE TEST: " + nodeTest);
 			}
 
 			switch (axisNumber) {
 			case Axis.ANCESTOR:
-				CoverageTool.cover(1);
 				if (getNodeKind() == Kind.DOCUMENT.getId()) {
-					CoverageTool.cover(2);
 					returnVal = EmptyIterator.getInstance();
 				} else {
-					CoverageTool.cover(3);
 					returnVal = new Navigator.AxisFilter(new SaxonEnumeration(
 							new AncestorAxis(rtx)), nodeTest);
 				}
 				break;
 			case Axis.ANCESTOR_OR_SELF:
-				CoverageTool.cover(4);
 				if (getNodeKind() == Kind.DOCUMENT.getId()) {
-					CoverageTool.cover(5);
 					returnVal = Navigator.filteredSingleton(this, nodeTest);
 				} else {
-					CoverageTool.cover(6);
 					returnVal = new Navigator.AxisFilter(new SaxonEnumeration(
 							new AncestorAxis(rtx, IncludeSelf.YES)), nodeTest);
 				}
 				break;
 			case Axis.ATTRIBUTE:
-				CoverageTool.cover(7);
 				if (getNodeKind() != Kind.ELEMENT.getId()) {
-					CoverageTool.cover(8);
 					returnVal = EmptyIterator.getInstance();
 				} else {
-					CoverageTool.cover(9);
 					returnVal = new Navigator.AxisFilter(new SaxonEnumeration(
 							new AttributeAxis(rtx)), nodeTest);
 				}
 				break;
 			case Axis.CHILD:
-				CoverageTool.cover(10);
 				if (rtx.hasFirstChild()) {
-					CoverageTool.cover(11);
 					returnVal = new Navigator.AxisFilter(new SaxonEnumeration(
 							new ChildAxis(rtx)), nodeTest);
 				} else {
-					CoverageTool.cover(12);
 					returnVal = EmptyIterator.getInstance();
 				}
 				break;
 			case Axis.DESCENDANT:
-				CoverageTool.cover(13);
 				if (hasChildNodes()) {
-				CoverageTool.cover(14);
 					returnVal = new Navigator.AxisFilter(new SaxonEnumeration(
 							new DescendantAxis(rtx)), nodeTest);
 				} else {
-				CoverageTool.cover(15);
 					returnVal = EmptyIterator.getInstance();
 				}
 				break;
 			case Axis.DESCENDANT_OR_SELF:
-				CoverageTool.cover(16);
 				returnVal = new Navigator.AxisFilter(new SaxonEnumeration(
 						new DescendantAxis(rtx, IncludeSelf.YES)), nodeTest);
 				break;
 			case Axis.FOLLOWING:
-				CoverageTool.cover(17);
 				returnVal = new Navigator.AxisFilter(new SaxonEnumeration(
 						new FollowingAxis(rtx)), nodeTest);
 				break;
@@ -666,73 +640,57 @@ public final class NodeWrapper implements SiblingCountingNode {
 				case DOCUMENT:
 				case ATTRIBUTE:
 				case NAMESPACE:
-				CoverageTool.cover(18);
 					returnVal = EmptyIterator.getInstance();
 					break;
 				default:
-				CoverageTool.cover(19);
 					returnVal = new Navigator.AxisFilter(new SaxonEnumeration(
 							new FollowingSiblingAxis(rtx)), nodeTest);
 					break;
 				}
 
 			case Axis.NAMESPACE:
-				CoverageTool.cover(20);
 				if (getNodeKind() != Kind.ELEMENT.getId()) {
-				CoverageTool.cover(21);
 					returnVal = EmptyIterator.getInstance();
 				} else {
-				CoverageTool.cover(22);
 					returnVal = NamespaceIterator.makeIterator(this, nodeTest);
 				}
 				break;
 			case Axis.PARENT:
-				CoverageTool.cover(23);
 				if (rtx.getParentKey() == Kind.DOCUMENT.getId()) {
-				CoverageTool.cover(24);
 					returnVal = EmptyIterator.getInstance();
 				} else {
-				CoverageTool.cover(25);
 					returnVal = new Navigator.AxisFilter(new SaxonEnumeration(
 							new ParentAxis(rtx)), nodeTest);
 				}
 			case Axis.PRECEDING:
-				CoverageTool.cover(26);
 				returnVal = new Navigator.AxisFilter(new SaxonEnumeration(
 						new PrecedingAxis(rtx)), nodeTest);
 				break;
 			case Axis.PRECEDING_SIBLING:
-				CoverageTool.cover(27);
 				switch (mNodeKind) {
 				case DOCUMENT:
 				case ATTRIBUTE:
 				case NAMESPACE:
-				CoverageTool.cover(28);
 					returnVal = EmptyIterator.getInstance();
 					break;
 				default:
-				CoverageTool.cover(29);
 					returnVal = new Navigator.AxisFilter(new SaxonEnumeration(
 							new PrecedingSiblingAxis(rtx)), nodeTest);
 					break;
 				}
 
 			case Axis.SELF:
-				CoverageTool.cover(30);
 				returnVal = Navigator.filteredSingleton(this, nodeTest);
 				break;
 
 			case Axis.PRECEDING_OR_ANCESTOR:
-				CoverageTool.cover(31);
 				returnVal = new Navigator.AxisFilter(
 						new Navigator.PrecedingEnumeration(this, true), nodeTest);
 				break;
 			default:
-				CoverageTool.cover(32);
 				throw new IllegalArgumentException("Unknown axis number " + axisNumber);
 			}
 		} catch (final SirixException exc) {
-			CoverageTool.cover(33);
 			LOGGER.error(exc.toString());
 		}
 		return returnVal;
@@ -847,45 +805,4 @@ public final class NodeWrapper implements SiblingCountingNode {
 	public long getKey() {
 		return mKey;
 	}
-}
-
-
-class CoverageTool {
-    static ArrayList<String> branches = new ArrayList<>();
-    static boolean initialized = false;
-
-    /**
-     * Initialize the branch array if not yet initialized
-     */ 
-    static void initializeBranches() {
-        for (int i = 0; i < 34; ++i) {
-            branches.addLast("ID: " + i + "  false\n");
-        }
-        initialized = true;
-    }
-
-    /**
-     * Cover the branch with the given branch ID.
-     * The entire branch array is written to the
-     * file each time this function is called.
-     */
-    static void cover(int branchId) {
-        if(!CoverageTool.initialized) {
-            initializeBranches();
-        }
-
-        branches.set(branchId, "ID: " + branchId + "  true\n");
-        try {
-            StringBuilder sb = new StringBuilder();
-            for(String branch : branches) {
-                sb.append(branch);
-            }
-
-            BufferedWriter writer = new BufferedWriter(new FileWriter("checkNodesCoverage.txt"));
-            writer.write(sb.toString());
-            writer.close();
-        } catch (IOException e) {
-            System.out.println(e.toString());
-        }
-    }
 }
