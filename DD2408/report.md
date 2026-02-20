@@ -81,6 +81,12 @@ The high complexity is not needed. We can split the function into smaller parts 
 #### P+ Implementation (Melker Trané)
 For an implimentation of the refactor, see branch refactor-melker. The processNode function now has a CCN of 4 while the 3 helper functions each has a CCN of 14.
 
+### `getReturnType`
+Similar to above, the high complexity is not needed. The function can be split into two additional functions. One that takes care of the numerical types, and one that takes care of the other types.
+
+#### P+ Implementation (Edwin Nordås Jogensjö)
+See the branch p-plus-edwin. The refactored `getReturnType` now has a CCN of 2, while the one for numerical types have CCN = 4 and the other have CCN = 7.
+
 ## Coverage
 
 ### Tools
@@ -130,7 +136,7 @@ Number of test cases added: two per team member (P) or at least four (P+).
 | `serialize`   |               |              |              |
 | `iterateAxis` |               |              |              |
 |`isNCStartChar`|               |              |              |
-|`getReturnType`|               |              |              |
+|`getReturnType`| 20            | 22           | 24           |
 | `processNode` | 10            | 17           | 27           |
 
 ### processNode
@@ -147,6 +153,15 @@ Two extra tests was made. The first tests every pair which inserts as first chil
 When inserting as last child, we assert that we throw exceptions since this is not supported by the 'processNode' function.
 
 See branch extra-coverage-melker
+
+### getReturnType
+
+The method can compare either numerical values or other values. If both input types are of numerical values, the method returns `DOUBLE`, `FLOAT` or `DECIMAL` as the type depending on the primitive base type of the values. The coverage of this was improved by creating a test that asserts that the method returns double if the first operand is a double, and the other is another numerical type. We also added a test that assures that the method returns a `TIME` type if the parameters are of type `TIME` and `DAY_TIME_DURATION`.
+
+#### Extra tests P+ (Edwin Nordås Jogensjö)
+One extra test could be made to improve coverage for when the first input parameter is of type `DECIMAL`, and the other type is `FLOAT`. This covers another branch in the function, and asserts that the return is of type `FLOAT`. 
+
+Additionally, one other test was made to assert that the program throws an error. However, this test needed a slight modification of the code since the way it was written before made it impossible to reach this branch. When trying to convert the two input parameters to their primitive base types, the function expects an `IllegalStateException` to be thrown if one of the parameters does not have a primitive base type. However, this exception will not be thrown anywhere by the program, but instead a `SiriXPathException`. Therefore, I modified the try-catch statement in `getReturnType` to expect this exception, and added a test for when this should be thrown.
 
 ## Self-assessment: Way of working
 
