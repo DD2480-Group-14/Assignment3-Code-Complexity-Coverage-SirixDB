@@ -70,6 +70,9 @@ Lizard did not seem to take multiple exit points or exceptions (throws) into acc
 
 TODO: Need to add for all functions
 
+### `serialize`
+The high complexity is not necessary. The function could be split up into to multiple smaller functions. For example we could have one function for each data type `Atomic`, `StructuredDBItem`, `Array`, `Object` that serializes specifically that object. 
+
 ### `modify`
 
 The high cyclomatic complexity is not justified in this function, for example the branch where we do a full replacement can be lifted out into its own helper function and then the switch case that does a numeric full replacement can be brought out into an additional helper function. 
