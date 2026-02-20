@@ -733,7 +733,7 @@ class CoverageTool {
                 sb.append(branch);
             }
 
-            BufferedWriter writer = new BufferedWriter(new FileWriter("checkNodesCoverage.txt"));
+            BufferedWriter writer = new BufferedWriter(new FileWriter("modifyCoverage.txt"));
             writer.write(sb.toString());
             writer.close();
         } catch (IOException e) {
