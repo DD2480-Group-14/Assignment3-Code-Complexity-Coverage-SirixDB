@@ -185,6 +185,7 @@ public final class DiffTest {
     }
   }
 
+  // Tests serialization of a sequence containing atomic values with pretty printing enabled. 
   @Test
   public void testSerializerWithAtomicValuesAndPrettyPrint() throws IOException{
     
@@ -213,6 +214,7 @@ public final class DiffTest {
     }
   }
 
+  // Tests multiple consecutive calls to method serialixe using the same serializer instance. 
   @Test
   public void testSerializerMultipleSerializeCalls() throws IOException {
   
