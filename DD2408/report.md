@@ -7,15 +7,16 @@ has to be delivered in a standard, cross-platform format.
 ## P+
 The following people are going for P+:
 - Melker Trané (processNode)
-- Edwin Nordås Jogensjö (getReturnType)
+\- Edwin Nordås Jogensjö (getReturnType)
+- Vidar Nykvist (modify)
 
 ## Project
 
-Name:
+Name: SirixDB
 
-URL:
+URL: [Sirix github repo](https://github.com/sirixdb/sirix)
 
-One or two sentences describing it
+Purpose: The sirix database has the main goal of handling the history of a database in a neat way.
 
 ## Onboarding experience
 
@@ -35,7 +36,7 @@ succeeds.
 | Method        | NLOC (Lizard) | CCN (Lizard) | CCN (Manual) |
 | :-----------: | :-----------: | :-----------:| :----------: |
 | `serialize`   | 62            | 16           | 16           |
-| `iterateAxis` | 113           | 30           | 29           |
+| `modify`      | 40            | 22           | 17           |
 |`isNCStartChar`| 11            | 24           | 26           |
 |`getReturnType`| 60            | 25           | 11           |
 | `processNode` | 122           | 48           | 40           |
@@ -49,8 +50,8 @@ As seen in the table above, function length does not always correlate with compl
 #### `serialize`
 The purpose of the method `serialize` is to act like a central component for transforming a `Sequence` of query results and convert them into JSON output. It is used when query results are to be presented to users or external systems, and to ensure that data types are serialized into valid JSON. The method first checks if the current result is the first and initializes a JSON "rest" array. It further iterates over the items in the Sequence, and each element is serialized according to its type, whether that's arrays, objects, structured database nodes, or atomic values.
 
-#### `iterateAxis`
-The purpose of the function is to be a iterator factory, depending on what axis is passed in, the corresponding iterator is constructed and returned. Since different axis require different constructions a giant switch case is used which increases the cyclomatic complexity by quite alot.
+#### `modify`
+The purpose of the function is to modify a key-value pair in a json object in the db. Depending on what datatype the existing value is and what datatype it is changed to, it branched accordingly.
 
 #### `isNCStartChar`
 The purpose of the function is validate whether a character input is a valid XML non colonised name start character according to XML specification. It also checks multiple unicode ranges. As the XML spec requirements check over 20 different specific character ranges and each range check itself adds to the CC, this causes high cyclomatic complexity.
@@ -63,24 +64,30 @@ The purpose of the method is to take a read only JSON node object and insert a c
 
 ### 4. Are exceptions taken into account in the given measurements?
 
-
-### 5. Is the documentation clear w.r.t. all the possible outcomes?
+Lizard did not seem to take multiple exit points or exceptions (throws) into account when measuring the CCN. When adjusting for this, we seem to get the same resulsts as Lizard.
 
 ## Refactoring
 
-Plan for refactoring complex code:
+TODO: Need to add for all functions
 
-Estimated impact of refactoring (lower CC, but other drawbacks?).
+### `modify`
 
-Carried out refactoring (optional, P+):
+The high cyclomatic complexity is not justified in this function, for example the branch where we do a full replacement can be lifted out into its own helper function and then the switch case that does a numeric full replacement can be brought out into an additional helper function. 
 
-git diff ...
+#### P+ Implementation (Vidar Nykvist)
+See branch `vidar-refactor-modify-function` for the implementation. Or follow [this](https://github.com/DD2480-Group-14/Assignment3-Code-Complexity-Coverage-SirixDB/blob/vidar-refactor-modify-function/bundles/sirix-query/src/main/java/io/sirix/query/json/JsonDBObject.java) url.
+
+The `modify` function now has a CC of 5 instead, the helper functions (`fullReplaceMent`, `fullReplacementNumerical`) have each a CC of 7 respectively.   
 
 ### `processNode`
 The high complexity is not needed. We can split the function into smaller parts which each take care of a insert location.
 
 #### P+ Implementation (Melker Trané)
-For an implimentation of the refactor, see branch refactor-melker. The processNode function now has a CCN of 4 while the 3 helper functions each has a CCN of 14.
+For an implimentation of the refactor, see branch refactor-melker and file bundles/sirix-core/src/main/java/io/sirix/service/json/shredder/JsonResourceCopy.java
+
+Please see [Commit](https://github.com/DD2480-Group-14/Assignment3-Code-Complexity-Coverage-SirixDB/commit/d0d1f563291476472e126a3b5b856b987bbe1192#diff-7f72cbacc86cd63a6f669fbbb93e8e93bd3b89dd35cd47e4ca0f1740ecced9e1) and [File](https://github.com/DD2480-Group-14/Assignment3-Code-Complexity-Coverage-SirixDB/blob/refactor-melker/bundles/sirix-core/src/main/java/io/sirix/service/json/shredder/JsonResourceCopy.java)
+
+The processNode function now has a CCN of 4 while the 3 helper functions each has a CCN of 14.
 
 ### `getReturnType`
 Similar to above, the high complexity is not needed. The function can be split into two additional functions. One that takes care of the numerical types, and one that takes care of the other types.
@@ -90,55 +97,33 @@ See the branch p-plus-edwin in `bundles/sirix-core/src/main/java/io/sirix/servic
 
 ## Coverage
 
-### Tools
-
-Document your experience in using a "new"/different coverage tool.
-
-How well was the tool documented? Was it possible/easy/difficult to
-integrate it with your build environment?
-
-### Your own coverage tool
-
-Show a patch (or link to a branch) that shows the instrumented code to
-gather coverage measurements.
-
-The patch is probably too long to be copied here, so please add
-the git command that is used to obtain the patch instead:
-
-git diff ...
-
-What kinds of constructs does your tool support, and how accurate is
-its output?
-
-### Evaluation
-
-1. How detailed is your coverage measurement?
-
-2. What are the limitations of your own tool?
-
-3. Are the results of your tool consistent with existing coverage tools?
+For our ad hoc coverage tool we have a CoverageRegister singleton. This singleton has fixed length array of boolean values where the value at a certain position correspond to whether a certain branch has been covered or not. In every branch we add a line which "registers" that branch as visited (eg. 'CoverageRegister.register(3)' for the forth branch). When all tests are executed we call a 'getReport' method on the singleton which returns a string with contains information on what branches were covered and what branches were not.
 
 ## Coverage improvement
 
-Show the comments that describe the requirements for the coverage.
-
-Report of old coverage: [link]
-
-Report of new coverage: [link]
-
-Test cases added:
-
-git diff ...
-
-Number of test cases added: two per team member (P) or at least four (P+).
+The branches that contain the improvements is called "improved-coverage"
+ 
+Below is a table that shows the branch coverage for the different methods before and after the tests were added. 
 
 | Method        | Current       | Improved     | Extra (P+)   |
 | :-----------: | :-----------: | :-----------:| :----------: |
 | `serialize`   |               |              |              |
-| `iterateAxis` |               |              |              |
-|`isNCStartChar`|               |              |              |
+| `modify`      |  4            |  6           | 8            |
+|`isNCStartChar`|  2            |  4           |              |
 |`getReturnType`| 20            | 22           | 24           |
 | `processNode` | 10            | 17           | 27           |
+
+### `modify`
+
+The method `modify` is called in the `replace` function which is then called when executing a query including a `replace`, since the previous tests only tried to replace values with `string` and `object` datatypes, the `replace` function does not enter the `null` or `boolean` branch so we create 2 tests with queries that does just this.
+
+See `testReplaceOperationBoolean` and `testReplaceOperationNull` at [this](https://github.com/DD2480-Group-14/Assignment3-Code-Complexity-Coverage-SirixDB/blob/improved-coverage/bundles/sirix-query/src/test/java/io/sirix/query/JsonMultipleUpdatesTest.java) url
+
+#### Extra tests for P+ (Vidar Nykvist)
+
+When the method replaces a value of a different datatype it has to do a full replacement, this was previously only tested in the case of a String but we can implement tests for Number and Boolean.
+
+See `testReplaceOperationChangeStringToNumber` and `testReplaceOperationChangeStringToBoolean` in branch `vidar-extra-improve-coverage-modify` for the implementation. Or follow [this](https://github.com/DD2480-Group-14/Assignment3-Code-Complexity-Coverage-SirixDB/blob/vidar-extra-improve-coverage-modify/bundles/sirix-query/src/test/java/io/sirix/query/JsonMultipleUpdatesTest.java) url.
 
 ### processNode
 
@@ -153,7 +138,9 @@ Two extra tests was made. The first tests every pair which inserts as first chil
 
 When inserting as last child, we assert that we throw exceptions since this is not supported by the 'processNode' function.
 
-See branch extra-coverage-melker
+See branch extra-coverage-melker and the file bundles/sirix-core/src/test/java/io/sirix/service/json/shredder/JsonResourceCopyTest.java
+
+Please see [File](https://github.com/DD2480-Group-14/Assignment3-Code-Complexity-Coverage-SirixDB/blob/extra-coverage-melker/bundles/sirix-core/src/test/java/io/sirix/service/json/shredder/JsonResourceCopyTest.java)
 
 ### getReturnType
 
@@ -169,9 +156,3 @@ See the branch `p-plus-edwin` in file `bundles/sirix-core/src/test/java/io/sirix
 ## Self-assessment: Way of working
 
 As in the first assignment, we still consider ourselves to be in the "in use" state. This is mainly because this assignment was quite differnt from the first two, which required us to form new practices and foundations. And because of the relative short time period between this and the last assignment, we have not spent that much time to fully flesh out all practices for this assignment. While we have gotten to know each other better, our commucation has improved. For the next assignment, which seems to more like this one compared to the first two, we hope to have a good plan going into the assignment, so we do not have to spend as much time to change/redo stuff when different approaches are taken by different team members.
-
-## Overall experience
-
-What are your main take-aways from this project? What did you learn?
-
-Is there something special you want to mention here?
