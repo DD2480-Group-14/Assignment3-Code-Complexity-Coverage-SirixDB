@@ -39,17 +39,75 @@ public final class XMLToken {
    * @param ch character
    * @return result of check
    */
-  public static boolean isNCStartChar(final int ch) {
-    return ch < 0x80
-        ? ch >= 'A' && ch <= 'Z' || ch >= 'a' && ch <= 'z' || ch == '_'
-        : ch < 0x300
-            ? ch >= 0xC0 && ch != 0xD7 && ch != 0xF7
-            : ch >= 0x370 && ch <= 0x37D || ch >= 0x37F && ch <= 0x1FFF
-                || ch >= 0x200C && ch <= 0x200D || ch >= 0x2070 && ch <= 0x218F
-                || ch >= 0x2C00 && ch <= 0x2EFF || ch >= 0x3001 && ch <= 0xD7FF
-                || ch >= 0xF900 && ch <= 0xFDCF || ch >= 0xFDF0 && ch <= 0xFFFD
-                || ch >= 0x10000 && ch <= 0xEFFFF;
-  }
+    public static boolean isNCStartChar(final int ch) {
+        if (ch < 0x80) {
+            CoverageTool.cover(0);
+            if (ch >= 'A' && ch <= 'Z') {
+                CoverageTool.cover(1);
+                return true;
+            }
+            if (ch >= 'a' && ch <= 'z') {
+                CoverageTool.cover(2);
+                return true;
+            }
+            if (ch == '_') {
+                CoverageTool.cover(3);
+                return true;
+            }
+            CoverageTool.cover(4);
+            return false;
+        }
+        CoverageTool.cover(5);
+        if (ch < 0x300) {
+            CoverageTool.cover(6);
+            if (ch >= 0xC0 && ch != 0xD7 && ch != 0xF7) {
+                CoverageTool.cover(7);
+                return true;
+            }
+            CoverageTool.cover(8);
+            return false;
+        }
+        CoverageTool.cover(9);
+        if (ch >= 0x370 && ch <= 0x37D) {
+            CoverageTool.cover(10);
+            return true;
+        }
+        if (ch >= 0x37F && ch <= 0x1FFF) {
+            CoverageTool.cover(11);
+            return true;
+        }
+        if (ch >= 0x200C && ch <= 0x200D) {
+            CoverageTool.cover(12);
+            return true;
+        }
+        if (ch >= 0x2070 && ch <= 0x218F) {
+            CoverageTool.cover(13);
+            return true;
+        }
+        if (ch >= 0x2C00 && ch <= 0x2EFF) {
+            CoverageTool.cover(14);
+            return true;
+        }
+        if (ch >= 0x3001 && ch <= 0xD7FF) {
+            CoverageTool.cover(15);
+            return true;
+        }
+        if (ch >= 0xF900 && ch <= 0xFDCF) {
+            CoverageTool.cover(16);
+            return true;
+        }
+        if (ch >= 0xFDF0 && ch <= 0xFFFD) {
+            CoverageTool.cover(17);
+            return true;
+        }
+        if (ch >= 0x10000 && ch <= 0xEFFFF) {
+            CoverageTool.cover(18);
+            return true;
+        }
+        CoverageTool.cover(19);
+        return false;
+    }
+
 
   /**
    * Checks if the specified character is an XML letter.
@@ -329,4 +387,45 @@ public final class XMLToken {
     }
     return escape.toString();
   }
+}
+
+
+class CoverageTool {
+    static ArrayList<String> branches = new ArrayList<>();
+    static boolean initialized = false;
+
+    /**
+     * Initialize the branch array if not yet initialized
+     */ 
+    static void initializeBranches() {
+        for (int i = 0; i < 20; ++i) {
+            branches.addLast("ID: " + i + "  false\n");
+        }
+        initialized = true;
+    }
+
+    /**
+     * Cover the branch with the given branch ID.
+     * The entire branch array is written to the
+     * file each time this function is called.
+     */
+    static void cover(int branchId) {
+        if(!CoverageTool.initialized) {
+            initializeBranches();
+        }
+
+        branches.set(branchId, "ID: " + branchId + "  true\n");
+        try {
+            StringBuilder sb = new StringBuilder();
+            for(String branch : branches) {
+                sb.append(branch);
+            }
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter("isNCStartChar.txt"));
+            writer.write(sb.toString());
+            writer.close();
+        } catch (IOException e) {
+            System.out.println(e.toString());
+        }
+    }
 }
