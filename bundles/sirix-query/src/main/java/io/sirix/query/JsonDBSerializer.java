@@ -57,7 +57,6 @@ import io.brackit.query.jdm.json.Object;
 import io.brackit.query.util.serialize.Serializer;
 import io.brackit.query.util.serialize.StringSerializer;
 import io.sirix.api.json.JsonNodeReadOnlyTrx;
-import io.sirix.query.coverage.CoverageRegister;
 import io.sirix.service.json.serialize.JsonSerializer;
 
 /**
@@ -291,7 +290,7 @@ class CoverageTool {
                 sb.append(branch);
             }
 
-            BufferedWriter writer = new BufferedWriter(new FileWriter("modifyCoverage.txt"));
+            BufferedWriter writer = new BufferedWriter(new FileWriter("serialize.txt"));
             writer.write(sb.toString());
             writer.close();
         } catch (IOException e) {
