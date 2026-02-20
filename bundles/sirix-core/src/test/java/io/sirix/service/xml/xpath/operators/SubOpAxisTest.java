@@ -202,9 +202,14 @@ public class SubOpAxisTest {
 
   }
 
-
+    //
     // Tests added to increase branch coverage
     //
+
+    /**
+     * getReturnType should return type double when
+     * the parameter operands are double and decimal
+     */ 
     @Test
     public final void getReturnTypeDoubleFirst() {
         AbstractAxis op1 = new SequenceAxis(holder.getXmlNodeReadTrx());
@@ -221,6 +226,10 @@ public class SubOpAxisTest {
 
     }
 
+    /**
+     * getReturnType should return type float when
+     * the parameter operands are decimal and float
+     */ 
     @Test
     public final void getReturnTypeFloatSecond() {
         AbstractAxis op1 = new SequenceAxis(holder.getXmlNodeReadTrx());
@@ -236,6 +245,10 @@ public class SubOpAxisTest {
         assertEquals(expected, actual);
     }
 
+    /**
+     * getReturnType should return type time when
+     * the parameter operands are time and day_time_turation
+     */
     @Test
     public final void getReturnTypeTIME() {
         AbstractAxis op1 = new SequenceAxis(holder.getXmlNodeReadTrx());
@@ -249,12 +262,5 @@ public class SubOpAxisTest {
         );
 
         assertEquals(expected, actual);
-        
-
     }
-
-
-
-
-
 }
