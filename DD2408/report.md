@@ -7,6 +7,7 @@ has to be delivered in a standard, cross-platform format.
 ## P+
 The following people are going for P+:
 - Melker Trané (processNode)
+- Vidar Nykvist (modify)
 
 ## Project
 
@@ -34,7 +35,7 @@ succeeds.
 | Method        | NLOC (Lizard) | CCN (Lizard) | CCN (Manual) |
 | :-----------: | :-----------: | :-----------:| :----------: |
 | `serialize`   | 62            | 16           | 16           |
-| `iterateAxis` | 113           | 30           | 29           |
+| `modify`      | 40            | 22           | 17           |
 |`isNCStartChar`| 11            | 24           | 26           |
 |`getReturnType`| 60            | 25           | 11           |
 | `processNode` | 122           | 48           | 40           |
@@ -48,8 +49,8 @@ As seen in the table above, function length does not always correlate with compl
 #### `serialize`
 The purpose of the method `serialize` is to act like a central component for transforming a `Sequence` of query results and convert them into JSON output. It is used when query results are to be presented to users or external systems, and to ensure that data types are serialized into valid JSON. The method first checks if the current result is the first and initializes a JSON "rest" array. It further iterates over the items in the Sequence, and each element is serialized according to its type, whether that's arrays, objects, structured database nodes, or atomic values.
 
-#### `iterateAxis`
-The purpose of the function is to be a iterator factory, depending on what axis is passed in, the corresponding iterator is constructed and returned. Since different axis require different constructions a giant switch case is used which increases the cyclomatic complexity by quite alot.
+#### `modify`
+The purpose of the function is to modify a key-value pair in a json object in the db. Depending on what datatype the existing value is and what datatype it is changed to, it branched accordingly.
 
 #### `isNCStartChar`
 The purpose of the function is validate whether a character input is a valid XML non colonised name start character according to XML specification. It also checks multiple unicode ranges. As the XML spec requirements check over 20 different specific character ranges and each range check itself adds to the CC, this causes high cyclomatic complexity.
@@ -67,6 +68,15 @@ Lizard did not seem to take multiple exit points or exceptions (throws) into acc
 ## Refactoring
 
 TODO: Need to add for all functions
+
+### `modify`
+
+The high cyclomatic complexity is not justified in this function, for example the branch where we do a full replacement can be lifted out into its own helper function and then the switch case that does a numeric full replacement can be brought out into an additional helper function. 
+
+#### P+ Implementation (Vidar Nykvist)
+See branch `vidar-refactor-modify-function` for the implementation. Or follow [this](https://github.com/DD2480-Group-14/Assignment3-Code-Complexity-Coverage-SirixDB/blob/vidar-refactor-modify-function/bundles/sirix-query/src/main/java/io/sirix/query/json/JsonDBObject.java) url.
+
+The `modify` function now has a CC of 5 instead, the helper functions (`fullReplaceMent`, `fullReplacementNumerical`) have each a CC of 7 respectively.   
 
 ### `processNode`
 The high complexity is not needed. We can split the function into smaller parts which each take care of a insert location.
@@ -89,10 +99,22 @@ Below is a table that shows the branch coverage for the different methods before
 | Method        | Current       | Improved     | Extra (P+)   |
 | :-----------: | :-----------: | :-----------:| :----------: |
 | `serialize`   |               |              |              |
-| `iterateAxis` |               |              |              |
+| `modify`      |  4            |  6           | 8            |
 |`isNCStartChar`|               |              |              |
 |`getReturnType`|               |              |              |
 | `processNode` | 10            | 17           | 27           |
+
+### `modify`
+
+The method `modify` is called in the `replace` function which is then called when executing a query including a `replace`, since the previous tests only tried to replace values with `string` and `object` datatypes, the `replace` function does not enter the `null` or `boolean` branch so we create 2 tests with queries that does just this.
+
+See `testReplaceOperationBoolean` and `testReplaceOperationNull` at [this](https://github.com/DD2480-Group-14/Assignment3-Code-Complexity-Coverage-SirixDB/blob/improved-coverage/bundles/sirix-query/src/test/java/io/sirix/query/JsonMultipleUpdatesTest.java) url
+
+#### Extra tests for P+ (Vidar Nykvist)
+
+When the method replaces a value of a different datatype it has to do a full replacement, this was previously only tested in the case of a String but we can implement tests for Number and Boolean.
+
+See `testReplaceOperationChangeStringToNumber` and `testReplaceOperationChangeStringToBoolean` in branch `vidar-extra-improve-coverage-modify` for the implementation. Or follow [this](https://github.com/DD2480-Group-14/Assignment3-Code-Complexity-Coverage-SirixDB/blob/vidar-extra-improve-coverage-modify/bundles/sirix-query/src/test/java/io/sirix/query/JsonMultipleUpdatesTest.java) url.
 
 ### processNode
 
