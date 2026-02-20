@@ -1,19 +1,5 @@
 package io.sirix.query.function.jn.diff;
 
-import com.google.gson.JsonParser;
-import io.brackit.query.Query;
-import io.sirix.JsonTestHelper;
-import io.sirix.JsonTestHelper.PATHS;
-import io.sirix.access.trx.node.json.objectvalue.StringValue;
-import io.sirix.query.JsonDBSerializer;
-import io.sirix.query.SirixCompileChain;
-import io.sirix.query.SirixQueryContext;
-import io.sirix.query.json.BasicJsonDBStore;
-import io.sirix.service.json.shredder.JsonShredder;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -22,8 +8,25 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+
+import com.google.gson.JsonParser;
+
+import io.brackit.query.Query;
+import io.sirix.JsonTestHelper;
+import io.sirix.JsonTestHelper.PATHS;
+import io.sirix.access.trx.node.json.objectvalue.StringValue;
+import io.sirix.query.JsonDBSerializer;
+import io.sirix.query.SirixCompileChain;
+import io.sirix.query.SirixQueryContext;
+import io.sirix.query.coverage.CoverageRegister;
+import io.sirix.query.json.BasicJsonDBStore;
+import io.sirix.service.json.shredder.JsonShredder;
 
 public final class DiffTest {
 
@@ -38,6 +41,11 @@ public final class DiffTest {
   public void tearDown() {
     JsonTestHelper.deleteEverything();
   }
+
+  @AfterAll
+  static void report() {
+      CoverageRegister.printReport();
+  } 
 
   @Test
   public void test_whenMultipleRevisionsExist_thenDiff() throws IOException {
