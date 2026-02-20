@@ -7,6 +7,9 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import java.util.List;
+import java.util.Set;
+
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -15,11 +18,32 @@ import static java.util.Objects.requireNonNull;
  * @author BaseX Team 2005-11, BSD License
  * @author Christian Gruen
  */
-public final class XMLToken {
+public class XMLToken {
   /** Hidden constructor. */
   private XMLToken() {
     throw new AssertionError("May never be instantiated!");
   }
+
+  private static final Set<Integer> SINGLE_CHARS = Set.of('_');
+
+  private static final List<CharRange> VALID_RANGES = List.of(
+    new CharRange('A', 'Z'),
+    new CharRange('a', 'z'),
+
+    new CharRange(0xC0, 0xD6),
+    new CharRange(0xD8, 0xF6),
+    new CharRange(0xF8, 0x2FF),
+
+    new CharRange(0x370, 0x37D),
+    new CharRange(0x37F, 0x1FFF),
+    new CharRange(0x200C, 0x200D),
+    new CharRange(0x2070, 0x218F),
+    new CharRange(0x2C00, 0x2EFF),
+    new CharRange(0x3001, 0xD7FF),
+    new CharRange(0xF900, 0xFDCF),
+    new CharRange(0xFDF0, 0xFFFD),
+    new CharRange(0x10000, 0xEFFFF)
+  );
 
   /**
    * Checks if the specified character is a valid XML character.
@@ -34,22 +58,26 @@ public final class XMLToken {
 
   /**
    * Checks if the specified character is a name start character, as required e.g. by QName and
-   * NCName.
+   * NCName using a lookup table
    *
    * @param ch character
-   * @return result of check
+   * @return result of check is true if valid NC start character
    */
   public static boolean isNCStartChar(final int ch) {
-    return ch < 0x80
-        ? ch >= 'A' && ch <= 'Z' || ch >= 'a' && ch <= 'z' || ch == '_'
-        : ch < 0x300
-            ? ch >= 0xC0 && ch != 0xD7 && ch != 0xF7
-            : ch >= 0x370 && ch <= 0x37D || ch >= 0x37F && ch <= 0x1FFF
-                || ch >= 0x200C && ch <= 0x200D || ch >= 0x2070 && ch <= 0x218F
-                || ch >= 0x2C00 && ch <= 0x2EFF || ch >= 0x3001 && ch <= 0xD7FF
-                || ch >= 0xF900 && ch <= 0xFDCF || ch >= 0xFDF0 && ch <= 0xFFFD
-                || ch >= 0x10000 && ch <= 0xEFFFF;
+    if (SINGLE_CHARS.contains(ch))(
+      return true;
+    )
+
+    for (CharRange range : VALID_RANGES) {
+      if (range contains(ch)){
+        return true;
+      }
+    }
+
+    return false;
   }
+
+
 
   /**
    * Checks if the specified character is an XML letter.
