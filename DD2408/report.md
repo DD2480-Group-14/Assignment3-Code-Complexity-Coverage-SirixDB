@@ -73,6 +73,10 @@ TODO: Need to add for all functions
 ### `serialize`
 The high complexity is not necessary. The function could be split up into to multiple smaller functions. For example we could have one function for each data type `Atomic`, `StructuredDBItem`, `Array`, `Object` that serializes specifically that object. 
 
+### `isNCStartchar`
+
+The high CC is not necessary as it can be replaced with a look up function with helper cells. The refactored version loops through ranges instead of pure boolean logic with no loop.
+
 ### `modify`
 
 The high cyclomatic complexity is not justified in this function, for example the branch where we do a full replacement can be lifted out into its own helper function and then the switch case that does a numeric full replacement can be brought out into an additional helper function. 
@@ -164,6 +168,18 @@ One extra test could be made to improve coverage for when the first input parame
 Additionally, one other test was made to assert that the program throws an error. However, this test needed a slight modification of the code since the way it was written before made it impossible to reach this branch. When trying to convert the two input parameters to their primitive base types, the function expects an `IllegalStateException` to be thrown if one of the parameters does not have a primitive base type. However, this exception will not be thrown anywhere by the program, but instead a `SiriXPathException`. Therefore, I modified the try-catch statement in `getReturnType` to expect this exception, and added a test for when this should be thrown.
 
 See the branch `p-plus-edwin` in file `bundles/sirix-core/src/test/java/io/sirix/service/xml/xpath/operators/SubOpAxisTest.java` for implementation.
+
+### `isNCStartChar`
+
+The method has one input value which determines which branch is visited. Depending on the value of `ch`, it falls into different character ranges:
+
+- If `ch` is A-Z, a-z, or underscore
+- If `ch` is in specific ranges excluding × and ÷
+- If `ch` is above 0x300, it checks multiple higher Unicode ranges
+
+The coverage of this was improved by creating the new tests that checks the uppercase ASCII letters (A-Z) and boundaries and lowercase ASCII letters (a-z) and boundaries. The function returns 'true' fr valid XML NC start characters and 'false' for others.
+
+See the tests [here](https://github.com/DD2480-Group-14/Assignment3-Code-Complexity-Coverage-SirixDB/blob/094dd436e8179b0c560f5a7895e0304072ab9228/bundles/sirix-core/src/test/java/io/sirix/utils/XMLTokenTest.java)
 
 ## Self-assessment: Way of working
 
