@@ -1,6 +1,21 @@
 package io.sirix.query.function.jn.diff;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.junit.After;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.google.gson.JsonParser;
+
 import io.brackit.query.Query;
 import io.sirix.JsonTestHelper;
 import io.sirix.JsonTestHelper.PATHS;
@@ -10,20 +25,6 @@ import io.sirix.query.SirixCompileChain;
 import io.sirix.query.SirixQueryContext;
 import io.sirix.query.json.BasicJsonDBStore;
 import io.sirix.service.json.shredder.JsonShredder;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public final class DiffTest {
 
@@ -181,6 +182,62 @@ public final class DiffTest {
       assertTrue("Diff object should have 'old-revision' field", diffObject.has("old-revision"));
       assertTrue("Diff object should have 'new-revision' field", diffObject.has("new-revision"));
       assertTrue("Diff object should have 'diffs' field", diffObject.has("diffs"));
+    }
+  }
+
+  @Test
+  public void testSerializerWithAtomicValuesAndPrettyPrint() throws IOException{
+    
+    JsonTestHelper.createTestDocumentWithDeweyIdsEnabled();
+
+    final var out = new StringBuilder();
+    final var serializer = new JsonDBSerializer(out, true); // Set prettyPrint = true
+
+    // Create atomic sequence
+    final var store = BasicJsonDBStore.newBuilder().location(PATHS.PATH1.getFile().getParent()).storeDeweyIds(true).build();
+
+    try (final var ctx = SirixQueryContext.createWithJsonStore(store);
+         final var chain = SirixCompileChain.createWithJsonStore(store)){
+      
+          // Atomic string and number
+          final var query = new Query(chain, "('DD', 2480)");
+          query.serialize(ctx, serializer);
+
+          serializer.close();
+
+          final var result = out.toString();
+
+          assertTrue(result.contains("\"DD\""));
+          assertTrue(result.contains("2480"));
+          assertTrue(result.contains("\"rest\""));
+    }
+  }
+
+  @Test
+  public void testSerializerMultipleSerializeCalls() throws IOException {
+  
+    JsonTestHelper.createTestDocumentWithDeweyIdsEnabled();
+
+    final var out = new StringBuilder();
+    final var serializer = new JsonDBSerializer(out, false); // prettyPrint = false
+
+    final var store = BasicJsonDBStore.newBuilder().location(PATHS.PATH1.getFile().getParent()).storeDeweyIds(true).build();
+
+    try (final var ctx = SirixQueryContext.createWithJsonStore(store);
+         final var chain = SirixCompileChain.createWithJsonStore(store)){
+      
+          final var firstQuery = new Query(chain,"1");
+          final var secondQuery = new Query(chain, "2");
+    
+          firstQuery.serialize(ctx, serializer);
+          secondQuery.serialize(ctx, serializer);
+
+          serializer.close();
+
+          final var result = out.toString();
+
+          assertTrue(result.contains(","));
+          assertTrue(result.contains("1") && result.contains("2"));
     }
   }
 }
