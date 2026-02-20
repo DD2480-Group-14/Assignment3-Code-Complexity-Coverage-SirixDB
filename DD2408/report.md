@@ -4,6 +4,10 @@ This is a template for your report. You are free to modify it as needed.
 It is not required to use markdown for your report either, but the report
 has to be delivered in a standard, cross-platform format.
 
+## P+
+The following people are going for P+:
+- Melker Trané (processNode)
+
 ## Project
 
 Name:
@@ -33,7 +37,7 @@ succeeds.
 | `iterateAxis` | 113           | 30           | 29           |
 |`isNCStartChar`| 11            | 24           | 26           |
 | `checkNodes`  | 52            | 18           | 17           |
-| `processNode` |               |              |              |
+| `processNode` | 122           | 48           | 40           |
 
 ### 2. Are the functions just complex, or also long?
 
@@ -54,6 +58,7 @@ The purpose of the function is validate whether a character input is a valid XML
 The method checks two Xml tree nodes for different node types. For example, if the node is an `Element`, it checks for several things, including matching names, attribute and namespace keys. The parameters are two read-only transactions of one old and one new revision.
 
 #### `processNode`
+The purpose of the method is to take a read only JSON node object and insert a copy of that node in a specific location in a writeable JSON object.
 
 ### 4. Are exceptions taken into account in the given measurements?
 
@@ -113,6 +118,29 @@ Test cases added:
 git diff ...
 
 Number of test cases added: two per team member (P) or at least four (P+).
+
+| Method        | Current       | Improved     | Extra (P+)   |
+| :-----------: | :-----------: | :-----------:| :----------: |
+| `serialize`   |               |              |              |
+| `iterateAxis` |               |              |              |
+|`isNCStartChar`|               |              |              |
+| `checkNodes`  |               |              |              |
+| `processNode` | 10            |              | 27           |
+
+### processNode
+
+The method has two "input" values which determine which branch is visited. The first value is where we should insert. The other is what type we are inserting. Depedning on the pair of these values, a specific branch is visited which calls a specific method (for example insertBooleanAsFirstChild or insertNumberAsLastChild).
+
+To improve the coverage we made two new tests: one which tests all pairs where we insert as left sibling, and another where we tests all pairs where we insert as right sibling.
+
+The assertions checks if the writable and readable databaseses looks the same after the insertions are made.
+
+#### Extra tests for P+ (Melker Trané)
+Two extra tests was made. The first tests every pair which inserts as first child, and the second tests every pair which inserts as last child.
+
+When inserting as last child, we assert that we throw exceptions since this is not supported by the 'processNode' function.
+
+See branch melker-extra-coverage
 
 ## Self-assessment: Way of working
 
