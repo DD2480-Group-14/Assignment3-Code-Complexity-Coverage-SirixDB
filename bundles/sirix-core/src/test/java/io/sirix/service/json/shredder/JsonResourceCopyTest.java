@@ -46,6 +46,12 @@ public final class JsonResourceCopyTest {
     CoverageRegister.printReport();
   }
 
+  /**
+   * Creates a new readable database.
+   * Then copies the readable database to a writable database.
+   * The databases should look the same afterwards
+   * We only use left sibling insertion
+   */
   @Test
   public void test_as_left_sibling() {
     JsonTestHelper.deleteEverything(); // makes the databases empty
@@ -120,6 +126,12 @@ public final class JsonResourceCopyTest {
     }
   }
 
+  /**
+   * Creates a new readable database.
+   * Then copies the readable database to a writable database.
+   * The databases should look the same afterwards
+   * We only use right sibling insertion
+   */
   @Test
   public void test_as_right_sibling() {
     JsonTestHelper.deleteEverything(); // makes the databases empty
