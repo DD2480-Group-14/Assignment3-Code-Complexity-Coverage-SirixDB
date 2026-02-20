@@ -370,6 +370,11 @@ public final class JsonDBObject extends AbstractItem
 		    } else if (value instanceof Bool bool) {
 		      trx.replaceObjectRecordValue(new BooleanValue(bool.booleanValue()));
 		    } else if (value instanceof Numeric) {
+			fullReplacementNumeric(trx, value);
+		}
+	}
+
+	private void fullReplacementNumeric(JsonNodeTrx trx, Sequence value) {
 		      switch (value) {
 			case Int anInt -> trx.replaceObjectRecordValue(new NumberValue(anInt.intValue()));
 			case Int32 int32 -> trx.replaceObjectRecordValue(new NumberValue(int32.intValue()));
@@ -381,7 +386,6 @@ public final class JsonDBObject extends AbstractItem
 			}
 		      }
 		    }
-	}
 
   private void setNumericValue(JsonNodeTrx trx, Sequence value) {
     switch (value) {
