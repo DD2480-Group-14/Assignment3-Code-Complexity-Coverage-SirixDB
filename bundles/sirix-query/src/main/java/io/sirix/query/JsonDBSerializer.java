@@ -27,6 +27,15 @@
  */
 package io.sirix.query;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import static java.util.Objects.requireNonNull;
+import java.util.Set;
+
 import io.brackit.query.atomic.Atomic;
 import io.brackit.query.jdm.Item;
 import io.brackit.query.jdm.Iter;
@@ -37,18 +46,8 @@ import io.brackit.query.jdm.json.Object;
 import io.brackit.query.util.serialize.Serializer;
 import io.brackit.query.util.serialize.StringSerializer;
 import io.sirix.api.json.JsonNodeReadOnlyTrx;
-import io.sirix.service.json.serialize.JsonSerializer;
 import io.sirix.query.coverage.CoverageRegister;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.Set;
-
-import static java.util.Objects.requireNonNull;
+import io.sirix.service.json.serialize.JsonSerializer;
 
 /**
  * @author Johannes Lichtenberger <a href="mailto:lichtenberger.johannes@gmail.com">mail</a>
@@ -75,12 +74,14 @@ public final class JsonDBSerializer implements Serializer, AutoCloseable {
     try {
       if (first) {
 
+        // Branch 0: First call
         CoverageRegister.register(0);
 
         first = false;
         out.append("{\"rest\":[");
       } else {
 
+        // Branch 1
         CoverageRegister.register(1);
 
         out.append(",");
@@ -88,6 +89,7 @@ public final class JsonDBSerializer implements Serializer, AutoCloseable {
 
       if (sequence != null) {
 
+        // Branch 2: Sequence is non-null
         CoverageRegister.register(2);
 
         Item item = null;
@@ -95,12 +97,14 @@ public final class JsonDBSerializer implements Serializer, AutoCloseable {
 
         if (sequence instanceof Array || sequence instanceof Object) {
 
+          // Branch 3: Sequence is Array/Object
           CoverageRegister.register(3);
 
           item = (Item) sequence;
           it = null;
         } else {
 
+          // Branch 4
           CoverageRegister.register(4);
 
           it = sequence.iterate();
@@ -109,18 +113,23 @@ public final class JsonDBSerializer implements Serializer, AutoCloseable {
         try {
           if (item == null) {
 
+            // Branch 5: Item is not available, fetch next.
             CoverageRegister.register(5);
 
             item = it.next();
           } else {
+
+            // Branch 6
             CoverageRegister.register(6);
           }
           while (item != null) {
 
+            // Branch 7: Loop over items in sequence
             CoverageRegister.register(7);
 
             if (item instanceof StructuredDBItem) {
 
+              // Branch 8: Item is a database node
               CoverageRegister.register(8);
 
               final var node = (StructuredDBItem<JsonNodeReadOnlyTrx>) item;
@@ -132,10 +141,13 @@ public final class JsonDBSerializer implements Serializer, AutoCloseable {
                       .isXQueryResultSequence();
               if (prettyPrint) {
 
+                // Branch 9: Pretty printing enabled
                 CoverageRegister.register(9);
 
                 serializerBuilder.prettyPrint().withInitialIndent();
               } else {
+
+                // Branch 10: Pretty printing disabled
                 CoverageRegister.register(10);
               }
               final JsonSerializer serializer = serializerBuilder.startNodeKey(node.getNodeKey()).build();
@@ -144,31 +156,38 @@ public final class JsonDBSerializer implements Serializer, AutoCloseable {
               item = printCommaIfNextItemExists(it);
             } else if (item instanceof Atomic) {
 
+              // Branch 11: Item is atomic value
               CoverageRegister.register(11);
 
               if (((Atomic) item).type() == Type.STR) {
 
+                // Branch 12: Atomic value is a string
                 CoverageRegister.register(12);
 
                 out.append("\"");
               } else {
 
+                // Branch 13: Atomic value is not string
                 CoverageRegister.register(13);
               
               }
               out.append(item.toString());
               if (((Atomic) item).type() == Type.STR) {
 
+                // Branch 14: Close quote for string atomic value
                 CoverageRegister.register(14);
 
                 out.append("\"");
               } else {
+
+                // Branch 15: No closing quote needed
                 CoverageRegister.register(15);
               }
 
               item = printCommaIfNextItemExists(it);
             } else if ((item instanceof Array) || (item instanceof Object)) {
 
+              // Branch 16: Item is JSON Array/Object
               CoverageRegister.register(16);
 
               try (final var out = new ByteArrayOutputStream(); final var printWriter = new PrintWriter(out)) {
@@ -178,14 +197,20 @@ public final class JsonDBSerializer implements Serializer, AutoCloseable {
 
               item = printCommaIfNextItemExists(it);
             } else {
+
+              // Branch 17: Item type not supported
               CoverageRegister.register(17);
             }
           }
         } finally {
           if (it != null) {
+
+            // Branch 18: Iterator was used and must be closed
             CoverageRegister.register(18);
             it.close();
           } else {
+
+            // Branch 19: No iterator was used, don't need to close.
             CoverageRegister.register(19);
           }
         }
@@ -193,6 +218,7 @@ public final class JsonDBSerializer implements Serializer, AutoCloseable {
       }
     } catch (final IOException e) {
 
+      // Branch 20: IOException occured
       CoverageRegister.register(20);
 
       throw new UncheckedIOException(e);
