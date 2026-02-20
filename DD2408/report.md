@@ -162,6 +162,16 @@ Additionally, one other test was made to assert that the program throws an error
 
 See the branch `p-plus-edwin` in file `bundles/sirix-core/src/test/java/io/sirix/service/xml/xpath/operators/SubOpAxisTest.java` for implementation.
 
+### `isNCStartChar`
+
+The method has one input value which determines which branch is visited. Depending on the value of `ch`, it falls into different character ranges:
+
+- If `ch` is A-Z, a-z, or underscore
+- If `ch` is in specific ranges excluding × and ÷
+- If `ch` is above 0x300, it checks multiple higher Unicode ranges
+
+The coverage of this was improved by creating the new tests that checks the uppercase ASCII letters (A-Z) and boundaries and lowercase ASCII letters (a-z) and boundaries. The function returns 'true' fr valid XML NC start characters and 'false' for others.
+
 ## Self-assessment: Way of working
 
 As in the first assignment, we still consider ourselves to be in the "in use" state. This is mainly because this assignment was quite differnt from the first two, which required us to form new practices and foundations. And because of the relative short time period between this and the last assignment, we have not spent that much time to fully flesh out all practices for this assignment. While we have gotten to know each other better, our commucation has improved. For the next assignment, which seems to more like this one compared to the first two, we hope to have a good plan going into the assignment, so we do not have to spend as much time to change/redo stuff when different approaches are taken by different team members.
