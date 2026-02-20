@@ -75,6 +75,12 @@ Carried out refactoring (optional, P+):
 
 git diff ...
 
+### `processNode`
+The high complexity is not needed. We can split the function into smaller parts which each take care of a insert location.
+
+#### P+ Implementation (Melker Trané)
+For an implimentation of the refactor, see branch refactor-melker. The processNode function now has a CCN of 4 while the 3 helper functions each has a CCN of 14.
+
 ## Coverage
 
 ### Tools
