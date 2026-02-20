@@ -34,12 +34,15 @@ The purpose of the function is to modify a key-value pair in a json object in th
 
 ## Refactoring plan
 
-The high cyclomatic complexity is not justified in this function the switch case can be lifted out into its own helper function. We could also lift out the entire part that runs `replaceObjectRecordValue` into its own helper function.
+The high cyclomatic complexity is not justified in this function, for example the switch case can that does a full replacement can be lifted out into its own helper function.
+
+See branch `vidar-refactor-modify-function` for the implementation.
+
+or follow [this](https://github.com/DD2480-Group-14/Assignment3-Code-Complexity-Coverage-SirixDB/blob/vidar-refactor-modify-function/bundles/sirix-query/src/main/java/io/sirix/query/json/JsonDBObject.java) url.
 
 ### Cyclomatic complexity
 
-This would bring down the complexity to the following:
-
+This brings down the complexity to the following:
 
 5 `if`
 4 `&&`
@@ -53,4 +56,3 @@ Regardless of which formula we use we can see that the complexity decreases eith
 70% if using the other
 
 The result is however the the helper function `fullReplacement` gets a high complexity with lizard reporting 13 but this is also a decrease of 40% compared to the previous 22. 
-
