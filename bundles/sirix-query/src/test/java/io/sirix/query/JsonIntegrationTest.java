@@ -1,11 +1,11 @@
 package io.sirix.query;
 
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import org.junit.jupiter.api.Test;
 
 public final class JsonIntegrationTest extends AbstractJsonTest {
 
@@ -1368,4 +1368,5 @@ public final class JsonIntegrationTest extends AbstractJsonTest {
          findAndScanPathIndexQuery,
          Files.readString(JSON_RESOURCE_PATH.resolve("testCreateAndScanCASIndex3").resolve("expectedOutput")));
   }
+  
 }
