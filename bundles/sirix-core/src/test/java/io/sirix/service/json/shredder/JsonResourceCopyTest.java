@@ -47,6 +47,294 @@ public final class JsonResourceCopyTest {
   }
   
   @Test
+  public void test_as_left_sibling() {
+    JsonTestHelper.deleteEverything(); // makes the databases empty
+    final var databaseForReads = JsonTestHelper.getDatabase(JsonTestHelper.PATHS.PATH1.getFile());
+    final var databaseForWrites = JsonTestHelper.getDatabase(JsonTestHelper.PATHS.PATH2.getFile());
+
+    // Populate the read database
+    try (final var wtx = databaseForReads.beginResourceSession(JsonTestHelper.RESOURCE).beginNodeTrx()) {
+      wtx.moveToDocumentRoot();
+      wtx.insertArrayAsFirstChild();
+      wtx.insertBooleanValueAsLastChild(false); // Needs to create the first "sibling"
+      wtx.insertArrayAsLeftSibling();
+      wtx.insertBooleanValueAsLeftSibling(true);
+      wtx.insertNullValueAsLeftSibling();
+      wtx.insertNumberValueAsLeftSibling(1);
+      wtx.insertObjectAsLeftSibling();
+      wtx.insertStringValueAsLeftSibling("test");
+      wtx.commit();
+    }    
+    
+    // Populate the write database
+    try (final var wtx = databaseForWrites.beginResourceSession(JsonTestHelper.RESOURCE).beginNodeTrx()) {
+      wtx.moveToDocumentRoot();
+      wtx.insertArrayAsFirstChild();
+      wtx.insertBooleanValueAsLastChild(false); // Needs to create the first "sibling"
+      wtx.commit();
+    }
+
+    try (final var sessionForReads = databaseForReads.beginResourceSession(JsonTestHelper.RESOURCE);
+         final var sessionForWrites = databaseForWrites.beginResourceSession(JsonTestHelper.RESOURCE);
+         final var rtx = sessionForReads.beginNodeReadOnlyTrx();
+         final var wtx = sessionForWrites.beginNodeTrx()) {
+      
+      wtx.moveToDocumentRoot();
+      wtx.moveToLastChild();
+      wtx.moveToLastChild();
+      rtx.moveToDocumentRoot();
+      rtx.moveToLastChild();
+      rtx.moveToLastChild();
+      rtx.moveToLeftSibling();
+
+      new JsonResourceCopy.Builder(wtx, rtx, InsertPosition.AS_LEFT_SIBLING).commitAfterwards().build().call();
+      wtx.moveToLeftSibling();
+      rtx.moveToLeftSibling();
+      new JsonResourceCopy.Builder(wtx, rtx, InsertPosition.AS_LEFT_SIBLING).commitAfterwards().build().call();
+      wtx.moveToLeftSibling();
+      rtx.moveToLeftSibling();
+      new JsonResourceCopy.Builder(wtx, rtx, InsertPosition.AS_LEFT_SIBLING).commitAfterwards().build().call();
+      wtx.moveToLeftSibling();
+      rtx.moveToLeftSibling();
+      new JsonResourceCopy.Builder(wtx, rtx, InsertPosition.AS_LEFT_SIBLING).commitAfterwards().build().call();
+      wtx.moveToLeftSibling();
+      rtx.moveToLeftSibling();
+      new JsonResourceCopy.Builder(wtx, rtx, InsertPosition.AS_LEFT_SIBLING).commitAfterwards().build().call();
+      wtx.moveToLeftSibling();
+      rtx.moveToLeftSibling();
+      new JsonResourceCopy.Builder(wtx, rtx, InsertPosition.AS_LEFT_SIBLING).commitAfterwards().build().call();
+
+      wtx.moveToDocumentRoot();
+      rtx.moveToDocumentRoot();
+
+      var readAxis = new DescendantAxis(rtx);
+      var writeAxis = new DescendantAxis(wtx);
+
+      // We assert that the databases are the same
+      while (readAxis.hasNext()) {
+        assertTrue(writeAxis.hasNext());
+        assertEquals(readAxis.nextLong(), writeAxis.nextLong());
+      }
+    
+      assertFalse(writeAxis.hasNext());
+    }
+  }
+
+  @Test
+  public void test_as_right_sibling() {
+    JsonTestHelper.deleteEverything(); // makes the databases empty
+    final var databaseForReads = JsonTestHelper.getDatabase(JsonTestHelper.PATHS.PATH1.getFile());
+    final var databaseForWrites = JsonTestHelper.getDatabase(JsonTestHelper.PATHS.PATH2.getFile());
+
+    // Populate the read database
+    try (final var wtx = databaseForReads.beginResourceSession(JsonTestHelper.RESOURCE).beginNodeTrx()) {
+      wtx.moveToDocumentRoot();
+      wtx.insertArrayAsFirstChild();
+      wtx.insertBooleanValueAsFirstChild(false); // Needs to create the first "sibling"
+      wtx.insertArrayAsRightSibling();
+      wtx.insertBooleanValueAsRightSibling(true);
+      wtx.insertNullValueAsRightSibling();
+      wtx.insertNumberValueAsRightSibling(1);
+      wtx.insertObjectAsRightSibling();
+      wtx.insertStringValueAsRightSibling("test");
+      wtx.commit();
+    }    
+    
+    // Populate the write database
+    try (final var wtx = databaseForWrites.beginResourceSession(JsonTestHelper.RESOURCE).beginNodeTrx()) {
+      wtx.moveToDocumentRoot();
+      wtx.insertArrayAsFirstChild();
+      wtx.insertBooleanValueAsLastChild(false); // Needs to create the first "sibling"
+      wtx.commit();
+    }
+
+    try (final var sessionForReads = databaseForReads.beginResourceSession(JsonTestHelper.RESOURCE);
+         final var sessionForWrites = databaseForWrites.beginResourceSession(JsonTestHelper.RESOURCE);
+         final var rtx = sessionForReads.beginNodeReadOnlyTrx();
+         final var wtx = sessionForWrites.beginNodeTrx()) {
+      
+      wtx.moveToDocumentRoot();
+      wtx.moveToFirstChild();
+      wtx.moveToFirstChild();
+      rtx.moveToDocumentRoot();
+      rtx.moveToFirstChild();
+      rtx.moveToFirstChild();
+      rtx.moveToRightSibling();
+
+      new JsonResourceCopy.Builder(wtx, rtx, InsertPosition.AS_RIGHT_SIBLING).commitAfterwards().build().call();
+      wtx.moveToRightSibling();
+      rtx.moveToRightSibling();
+      new JsonResourceCopy.Builder(wtx, rtx, InsertPosition.AS_RIGHT_SIBLING).commitAfterwards().build().call();
+      wtx.moveToRightSibling();
+      rtx.moveToRightSibling();
+      new JsonResourceCopy.Builder(wtx, rtx, InsertPosition.AS_RIGHT_SIBLING).commitAfterwards().build().call();
+      wtx.moveToRightSibling();
+      rtx.moveToRightSibling();
+      new JsonResourceCopy.Builder(wtx, rtx, InsertPosition.AS_RIGHT_SIBLING).commitAfterwards().build().call();
+      wtx.moveToRightSibling();
+      rtx.moveToRightSibling();
+      new JsonResourceCopy.Builder(wtx, rtx, InsertPosition.AS_RIGHT_SIBLING).commitAfterwards().build().call();
+      wtx.moveToRightSibling();
+      rtx.moveToRightSibling();
+      new JsonResourceCopy.Builder(wtx, rtx, InsertPosition.AS_RIGHT_SIBLING).commitAfterwards().build().call();
+
+      wtx.moveToDocumentRoot();
+      rtx.moveToDocumentRoot();
+
+      var readAxis = new DescendantAxis(rtx);
+      var writeAxis = new DescendantAxis(wtx);
+
+      // We assert that the databases are the same
+      while (readAxis.hasNext()) {
+        assertTrue(writeAxis.hasNext());
+        assertEquals(readAxis.nextLong(), writeAxis.nextLong());
+      }
+    
+      assertFalse(writeAxis.hasNext());
+    }
+  }
+
+  @Test
+  public void test_as_first_child() {
+    JsonTestHelper.deleteEverything(); // makes the databases empty
+    final var databaseForReads = JsonTestHelper.getDatabase(JsonTestHelper.PATHS.PATH1.getFile());
+    final var databaseForWrites = JsonTestHelper.getDatabase(JsonTestHelper.PATHS.PATH2.getFile());
+
+    // Populate the read database
+    try (final var wtx = databaseForReads.beginResourceSession(JsonTestHelper.RESOURCE).beginNodeTrx()) {
+      wtx.moveToDocumentRoot();
+      wtx.insertArrayAsFirstChild();
+      wtx.insertArrayAsFirstChild();
+      wtx.insertBooleanValueAsLeftSibling(true);
+      wtx.insertNullValueAsLeftSibling();
+      wtx.insertNumberValueAsLeftSibling(1);
+      wtx.insertObjectAsLeftSibling();
+      wtx.insertStringValueAsLeftSibling("test");
+      wtx.commit();
+    }    
+    
+    // Populate the write database
+    try (final var wtx = databaseForWrites.beginResourceSession(JsonTestHelper.RESOURCE).beginNodeTrx()) {
+      wtx.moveToDocumentRoot();
+      wtx.insertArrayAsFirstChild();
+      wtx.commit();
+    }
+
+    try (final var sessionForReads = databaseForReads.beginResourceSession(JsonTestHelper.RESOURCE);
+         final var sessionForWrites = databaseForWrites.beginResourceSession(JsonTestHelper.RESOURCE);
+         final var rtx = sessionForReads.beginNodeReadOnlyTrx();
+         final var wtx = sessionForWrites.beginNodeTrx()) {
+      
+      wtx.moveToDocumentRoot();
+      wtx.moveToFirstChild();
+      rtx.moveToDocumentRoot();
+      rtx.moveToFirstChild();
+      rtx.moveToLastChild();
+
+      new JsonResourceCopy.Builder(wtx, rtx, InsertPosition.AS_FIRST_CHILD).commitAfterwards().build().call();
+      rtx.moveToLeftSibling();
+      wtx.moveToParent();
+      new JsonResourceCopy.Builder(wtx, rtx, InsertPosition.AS_FIRST_CHILD).commitAfterwards().build().call();
+      rtx.moveToLeftSibling();
+      wtx.moveToParent();
+      new JsonResourceCopy.Builder(wtx, rtx, InsertPosition.AS_FIRST_CHILD).commitAfterwards().build().call();
+      rtx.moveToLeftSibling();
+      wtx.moveToParent();
+      new JsonResourceCopy.Builder(wtx, rtx, InsertPosition.AS_FIRST_CHILD).commitAfterwards().build().call();
+      rtx.moveToLeftSibling();
+      wtx.moveToParent();
+      new JsonResourceCopy.Builder(wtx, rtx, InsertPosition.AS_FIRST_CHILD).commitAfterwards().build().call();
+      rtx.moveToLeftSibling();
+      wtx.moveToParent();
+      new JsonResourceCopy.Builder(wtx, rtx, InsertPosition.AS_FIRST_CHILD).commitAfterwards().build().call();
+
+      wtx.moveToDocumentRoot();
+      rtx.moveToDocumentRoot();
+
+      var readAxis = new DescendantAxis(rtx);
+      var writeAxis = new DescendantAxis(wtx);
+
+      // We assert that the databases are the same
+      while (readAxis.hasNext()) {
+        assertTrue(writeAxis.hasNext());
+        assertEquals(readAxis.nextLong(), writeAxis.nextLong());
+      }
+    
+      assertFalse(writeAxis.hasNext());
+    }
+  }
+
+  @Test
+  public void test_as_last_child() {
+    JsonTestHelper.deleteEverything(); // makes the databases empty
+    final var databaseForReads = JsonTestHelper.getDatabase(JsonTestHelper.PATHS.PATH1.getFile());
+    final var databaseForWrites = JsonTestHelper.getDatabase(JsonTestHelper.PATHS.PATH2.getFile());
+
+    // Populate the read database
+    try (final var wtx = databaseForReads.beginResourceSession(JsonTestHelper.RESOURCE).beginNodeTrx()) {
+      wtx.moveToDocumentRoot();
+      wtx.insertArrayAsFirstChild();
+      wtx.insertArrayAsFirstChild();
+      wtx.insertBooleanValueAsRightSibling(true);
+      wtx.insertNullValueAsRightSibling();
+      wtx.insertNumberValueAsRightSibling(1);
+      wtx.insertObjectAsRightSibling();
+      wtx.insertStringValueAsRightSibling("test");
+      wtx.commit();
+    }    
+    
+    // Populate the write database
+    try (final var wtx = databaseForWrites.beginResourceSession(JsonTestHelper.RESOURCE).beginNodeTrx()) {
+      wtx.moveToDocumentRoot();
+      wtx.insertArrayAsFirstChild();
+      wtx.commit();
+    }
+
+    try (final var sessionForReads = databaseForReads.beginResourceSession(JsonTestHelper.RESOURCE);
+         final var sessionForWrites = databaseForWrites.beginResourceSession(JsonTestHelper.RESOURCE);
+         final var rtx = sessionForReads.beginNodeReadOnlyTrx();
+         final var wtx = sessionForWrites.beginNodeTrx()) {
+      
+      wtx.moveToDocumentRoot();
+      wtx.moveToFirstChild();
+      rtx.moveToDocumentRoot();
+      rtx.moveToFirstChild();
+      rtx.moveToFirstChild();
+
+      // Since AS_LEFT_CHILD is not a valid argument, the following calls should throw an exception.
+      assertThrows(IllegalStateException.class, () -> {
+        new JsonResourceCopy.Builder(wtx, rtx, InsertPosition.AS_LAST_CHILD).commitAfterwards().build().call();
+      });
+      rtx.moveToRightSibling();
+      wtx.moveToParent();
+      assertThrows(IllegalStateException.class, () -> {
+        new JsonResourceCopy.Builder(wtx, rtx, InsertPosition.AS_LAST_CHILD).commitAfterwards().build().call();
+      });
+      rtx.moveToRightSibling();
+      wtx.moveToParent();
+      assertThrows(IllegalStateException.class, () -> {
+        new JsonResourceCopy.Builder(wtx, rtx, InsertPosition.AS_LAST_CHILD).commitAfterwards().build().call();
+      });
+      rtx.moveToRightSibling();
+      wtx.moveToParent();
+      assertThrows(IllegalStateException.class, () -> {
+        new JsonResourceCopy.Builder(wtx, rtx, InsertPosition.AS_LAST_CHILD).commitAfterwards().build().call();
+      });
+      rtx.moveToRightSibling();
+      wtx.moveToParent();
+      assertThrows(IllegalStateException.class, () -> {
+        new JsonResourceCopy.Builder(wtx, rtx, InsertPosition.AS_LAST_CHILD).commitAfterwards().build().call();
+      });
+      rtx.moveToRightSibling();
+      wtx.moveToParent();
+      assertThrows(IllegalStateException.class, () -> {
+        new JsonResourceCopy.Builder(wtx, rtx, InsertPosition.AS_LAST_CHILD).commitAfterwards().build().call();
+      });
+
+    }
+  }
+
+  @Test
   public void test_when_inserted_as_first_child_or_as_right_sibling_if_is_as_excepted() {
     JsonTestHelper.createTestDocument();
     final var databaseForReads = JsonTestHelper.getDatabase(JsonTestHelper.PATHS.PATH1.getFile());
