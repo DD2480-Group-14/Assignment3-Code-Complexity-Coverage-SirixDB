@@ -100,7 +100,7 @@ Below is a table that shows the branch coverage for the different methods before
 | :-----------: | :-----------: | :-----------:| :----------: |
 | `serialize`   |               |              |              |
 | `modify`      |  4            |  6           | 8            |
-|`isNCStartChar`|               |              |              |
+|`isNCStartChar`|  2            |  4           |              |
 |`getReturnType`|               |              |              |
 | `processNode` | 10            | 17           | 27           |
 
