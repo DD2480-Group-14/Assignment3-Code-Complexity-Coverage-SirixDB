@@ -9,6 +9,7 @@ import io.sirix.utils.CoverageRegister;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,12 +37,12 @@ public final class JsonResourceCopyTest {
   }
 
   @BeforeAll
-  public void setBranches() {
+  public static void setBranches() {
     CoverageRegister.setBranchCount(30);
   }
 
   @AfterAll
-  public void printReport() {
+  public static void printReport() {
     CoverageRegister.printReport();
   }
 
