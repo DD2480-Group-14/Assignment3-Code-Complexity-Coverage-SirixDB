@@ -120,7 +120,7 @@ The method `serialize` contains multiple branches depending on the type of items
 
 To improve coverage, test was added to serialize atomic sequences with `prettyPrint = true` (`testSerializerWithAtomicValuesAndPrettyPrint()`), which forces the method to enter the branch that handles atomic values. Another test was added to test multiple serialize calls (`testSerializerMultipleSerializeCalls()`) and improve coverage of state handling in the serializer, specifically the branch that checks whether serialization has already started.
 
-See `testSerializerWithAtomicValuesAndPrettyPrint()` and `testSerializerMultipleSerializeCalls()` [here]().
+See `testSerializerWithAtomicValuesAndPrettyPrint()` and `testSerializerMultipleSerializeCalls()` [here](https://github.com/DD2480-Group-14/Assignment3-Code-Complexity-Coverage-SirixDB/blob/improved-coverage/bundles/sirix-query/src/test/java/io/sirix/query/function/jn/diff/DiffTest.java).
 
 ### `modify`
 
