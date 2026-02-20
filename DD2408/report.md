@@ -34,7 +34,7 @@ succeeds.
 | Method        | NLOC (Lizard) | CCN (Lizard) | CCN (Manual) |
 | :-----------: | :-----------: | :-----------:| :----------: |
 | `serialize`   | 62            | 16           | 16           |
-| `iterateAxis` | 113           | 30           | 29           |
+| `modify`      | 40            | 22           | 17           |
 |`isNCStartChar`| 11            | 24           | 26           |
 |`getReturnType`| 60            | 25           | 11           |
 | `processNode` | 122           | 48           | 40           |
@@ -48,8 +48,8 @@ As seen in the table above, function length does not always correlate with compl
 #### `serialize`
 The purpose of the method `serialize` is to act like a central component for transforming a `Sequence` of query results and convert them into JSON output. It is used when query results are to be presented to users or external systems, and to ensure that data types are serialized into valid JSON. The method first checks if the current result is the first and initializes a JSON "rest" array. It further iterates over the items in the Sequence, and each element is serialized according to its type, whether that's arrays, objects, structured database nodes, or atomic values.
 
-#### `iterateAxis`
-The purpose of the function is to be a iterator factory, depending on what axis is passed in, the corresponding iterator is constructed and returned. Since different axis require different constructions a giant switch case is used which increases the cyclomatic complexity by quite alot.
+#### `modify`
+The purpose of the function is to modify a key-value pair in a json object in the db. Depending on what datatype the key-value pair is it is branched accordingly.
 
 #### `isNCStartChar`
 The purpose of the function is validate whether a character input is a valid XML non colonised name start character according to XML specification. It also checks multiple unicode ranges. As the XML spec requirements check over 20 different specific character ranges and each range check itself adds to the CC, this causes high cyclomatic complexity.
