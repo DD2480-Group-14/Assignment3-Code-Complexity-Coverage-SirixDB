@@ -1,5 +1,15 @@
 package io.sirix.query.json;
 
+import java.util.ArrayList;
+
+import java.nio.file.Files;
+import java.io.File;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import com.google.common.base.Preconditions;
 import io.sirix.access.trx.node.json.objectvalue.*;
 import io.sirix.api.NodeReadOnlyTrx;
@@ -320,11 +330,13 @@ public final class JsonDBObject extends AbstractItem
   }
 
   private void modify(QNm field, Sequence value) {
+	
     final var trx = getReadWriteTrx();
 
     final var foundNode = findField(field, trx);
 
     if (!foundNode) {
+	CoverageTool.cover(0);
       return;
     }
 
@@ -335,18 +347,22 @@ public final class JsonDBObject extends AbstractItem
 
     // Check if we can do an in-place update (same type) to preserve node identity
     if (currentKind == NodeKind.OBJECT_STRING_VALUE && value instanceof Str str) {
+	CoverageTool.cover(1);
       trx.setStringValue(str.stringValue());
       return;
     }
     if (currentKind == NodeKind.OBJECT_NUMBER_VALUE && value instanceof Numeric) {
+	CoverageTool.cover(2);
       setNumericValue(trx, value);
       return;
     }
     if (currentKind == NodeKind.OBJECT_BOOLEAN_VALUE && value instanceof Bool bool) {
+	CoverageTool.cover(3);
       trx.setBooleanValue(bool.booleanValue());
       return;
     }
     if (currentKind == NodeKind.OBJECT_NULL_VALUE && value instanceof Null) {
+	CoverageTool.cover(4);
       // Null to null - no change needed
       return;
     }
@@ -355,25 +371,49 @@ public final class JsonDBObject extends AbstractItem
     trx.moveToParent();
 
     if (value instanceof Array) {
+	CoverageTool.cover(5);
       trx.replaceObjectRecordValue(new ArrayValue());
       insertSubtree(value, trx);
     } else if (value instanceof Object) {
+	CoverageTool.cover(6);
       trx.replaceObjectRecordValue(new ObjectValue());
       insertSubtree(value, trx);
     } else if (value instanceof Str str) {
+	CoverageTool.cover(7);
       trx.replaceObjectRecordValue(new StringValue(str.stringValue()));
     } else if (value instanceof Null) {
+	CoverageTool.cover(8);
       trx.replaceObjectRecordValue(new NullValue());
     } else if (value instanceof Bool bool) {
+	CoverageTool.cover(9);
       trx.replaceObjectRecordValue(new BooleanValue(bool.booleanValue()));
     } else if (value instanceof Numeric) {
+	CoverageTool.cover(10);
       switch (value) {
-        case Int anInt -> trx.replaceObjectRecordValue(new NumberValue(anInt.intValue()));
-        case Int32 int32 -> trx.replaceObjectRecordValue(new NumberValue(int32.intValue()));
-        case Int64 int64 -> trx.replaceObjectRecordValue(new NumberValue(int64.longValue()));
-        case Flt flt -> trx.replaceObjectRecordValue(new NumberValue(flt.floatValue()));
-        case Dbl dbl -> trx.replaceObjectRecordValue(new NumberValue(dbl.doubleValue()));
-        case Dec dec -> trx.replaceObjectRecordValue(new NumberValue(dec.decimalValue()));
+        case Int anInt -> {
+					CoverageTool.cover(11);
+					trx.replaceObjectRecordValue(new NumberValue(anInt.intValue()));
+				}
+        case Int32 int32 -> {
+					CoverageTool.cover(12);
+					trx.replaceObjectRecordValue(new NumberValue(int32.intValue()));
+				}
+        case Int64 int64 -> {
+					CoverageTool.cover(13);
+					trx.replaceObjectRecordValue(new NumberValue(int64.longValue()));
+				}
+        case Flt flt -> {
+					CoverageTool.cover(14);
+					trx.replaceObjectRecordValue(new NumberValue(flt.floatValue()));
+				}
+        case Dbl dbl -> {
+					CoverageTool.cover(15);
+					trx.replaceObjectRecordValue(new NumberValue(dbl.doubleValue()));
+				}
+        case Dec dec -> {
+					CoverageTool.cover(16);
+					trx.replaceObjectRecordValue(new NumberValue(dec.decimalValue()));
+				}
         default -> {
         }
       }
@@ -660,4 +700,44 @@ public final class JsonDBObject extends AbstractItem
 
     return (int) rtx.getChildCount();
   }
+}
+
+class CoverageTool {
+    static ArrayList<String> branches = new ArrayList<>();
+    static boolean initialized = false;
+
+    /**
+     * Initialize the branch array if not yet initialized
+     */ 
+    static void initializeBranches() {
+        for (int i = 0; i < 17; ++i) {
+            branches.addLast("ID: " + i + "  false\n");
+        }
+        initialized = true;
+    }
+
+    /**
+     * Cover the branch with the given branch ID.
+     * The entire branch array is written to the
+     * file each time this function is called.
+     */
+    static void cover(int branchId) {
+        if(!CoverageTool.initialized) {
+            initializeBranches();
+        }
+
+        branches.set(branchId, "ID: " + branchId + "  true\n");
+        try {
+            StringBuilder sb = new StringBuilder();
+            for(String branch : branches) {
+                sb.append(branch);
+            }
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter("modifyCoverage.txt"));
+            writer.write(sb.toString());
+            writer.close();
+        } catch (IOException e) {
+            System.out.println(e.toString());
+        }
+    }
 }

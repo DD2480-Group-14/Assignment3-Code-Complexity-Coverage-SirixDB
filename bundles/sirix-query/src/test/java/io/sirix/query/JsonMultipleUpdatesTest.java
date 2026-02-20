@@ -407,4 +407,45 @@ public final class JsonMultipleUpdatesTest extends AbstractJsonTest {
     test(storeQuery, updateQuery, openQuery, assertion);
   }
 
+  /**
+   * Test replace operation with boolean value,
+   * handles NodeKind.OBJECT_BOOLEAN_VALUE case.
+   */
+  @Test
+  public void testReplaceOperationBoolean() throws IOException {
+    final String storeQuery = """
+        jn:store('json-path1','mydoc.jn','{"boolfield": true}')
+        """;
+    final String updateQuery = """
+        let $doc := jn:doc('json-path1','mydoc.jn')
+        return replace json value of $doc.boolfield with false
+        """;
+    final String openQuery = "jn:doc('json-path1','mydoc.jn')";
+    final String assertion = """
+        {"boolfield":false}
+        """.strip();
+    test(storeQuery, updateQuery, openQuery, assertion);
+  }
+
+  /**
+   * Test replace operation with null value,
+   * handles NodeKind.OBJECT_NULL_VALUE case.
+   */
+  @Test
+  public void testReplaceOperationNull() throws IOException {
+    final String storeQuery = """
+        jn:store('json-path1','mydoc.jn','{"nullfield": null}')
+        """;
+    final String updateQuery = """
+        let $doc := jn:doc('json-path1','mydoc.jn')
+        return replace json value of $doc.nullfield with null
+        """;
+    final String openQuery = "jn:doc('json-path1','mydoc.jn')";
+    final String assertion = """
+        {"nullfield":null}
+        """.strip();
+    test(storeQuery, updateQuery, openQuery, assertion);
+  }
+
+
 }
