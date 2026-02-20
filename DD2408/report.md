@@ -73,13 +73,13 @@ TODO: Need to add for all functions
 ### `serialize`
 The high complexity is not necessary. The function could be split up into to multiple smaller functions. For example we could have one function for each data type `Atomic`, `StructuredDBItem`, `Array`, `Object` that serializes specifically that object. 
 
-### `modify`
-
-The high cyclomatic complexity is not justified in this function, for example the branch where we do a full replacement can be lifted out into its own helper function and then the switch case that does a numeric full replacement can be brought out into an additional helper function. 
-
 ### `isNCStartchar`
 
 The high CC is not necessary as it can be replaced with a look up function with helper cells. The refactored version loops through ranges instead of pure boolean logic with no loop.
+
+### `modify`
+
+The high cyclomatic complexity is not justified in this function, for example the branch where we do a full replacement can be lifted out into its own helper function and then the switch case that does a numeric full replacement can be brought out into an additional helper function. 
 
 #### P+ Implementation (Vidar Nykvist)
 See branch `vidar-refactor-modify-function` for the implementation. Or follow [this](https://github.com/DD2480-Group-14/Assignment3-Code-Complexity-Coverage-SirixDB/blob/vidar-refactor-modify-function/bundles/sirix-query/src/main/java/io/sirix/query/json/JsonDBObject.java) url.
